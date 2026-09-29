@@ -5,9 +5,9 @@ Repositorio del **Laboratorio 2** para la asignatura de Electrónica. El objetiv
 ---
 
 ## 👥 Integrantes (Grupo N°)
-- **[Nombre y Apellido 1]** - *[Legajo / Correo]*
-- **[Nombre y Apellido 2]** - *[Legajo / Correo]*
-- **[Nombre y Apellido 3]** - *[Legajo / Correo]*
+- **[Castilla Juan Felipe]** 
+- **[Agustin Eduardo Dalmazzo]**
+- **[Julian Lopez Bernal]** 
 
 ---
 
@@ -18,8 +18,7 @@ Repositorio del **Laboratorio 2** para la asignatura de Electrónica. El objetiv
 | **Ganancia de Tensión de Transf. ($G_T$)** | $> 75$ |
 | **Impedancia de Entrada ($Z_{in}$)** | $> 350\text{ k}\Omega$ |
 | **Impedancia de Salida ($Z_o$)** | $8\Omega \pm 5\%$ |
-| **Polarización** | Espejo de corriente NMOS con degeneración de fuente |
-| **Excursión** | Máxima excursión simétrica prioritarias en el diseño |
+
 
 ---
 
