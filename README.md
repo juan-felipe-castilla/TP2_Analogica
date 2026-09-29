@@ -1,6 +1,6 @@
 # Laboratorio 2: Amplificador BJT Multietapa con Espejo de Corriente NMOS
 
-Repositorio del **Laboratorio 2** para la asignatura de Electrónica. El objetivo de este proyecto es diseñar, simular, implementar en PCB y caracterizar experimentalmente un amplificador en cascada basado en transistores BJT, junto con una red de polarización/generador de corriente por espejo NMOS con degeneración de fuente.
+Repositorio del **Laboratorio 2** para la asignatura de Electrónica. El objetivo de este proyecto es diseñar, simular, implementar en PCB y caracterizar experimentalmente un amplificador en cascada basado en transistores BJT.
 
 ---
 
