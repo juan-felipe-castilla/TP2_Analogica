@@ -1,0 +1,282 @@
+\section{Introducción}
+
+Este documento contiene algunos elementos típicos usados en informes técnico o de laboratorio. Hay muchos recursos para aprender \LaTeX como:
+
+\begin{itemize}
+    \item \href{https://www.overleaf.com/learn}{Tutoriales de Overleaf}
+    \item \href{https://latexguide.org/}{LaTeX Beginner's Guide}
+    \item \href{https://tobi.oetiker.ch/lshort/lshort.pdf}{The Not So Short Introduction to \LaTeX}
+    \item \href{https://www.latex-project.org/help/books/tlc3-digital-chapter-samples.pdf}{The \LaTeX Companion}
+\end{itemize}
+
+\subsection{Estilos de texto y listas}
+
+Esto es un texto de ejemplo. Para generar párrafos en latex se puede escribir normalmente en un archivo \texttt{.tex}. Notar que en el editor un mismo párrafo aparece en una única línea de ``código".
+
+Se puede modificar el estilo de texto para hacer \textit{partes en itálica} y \textbf{partes en negrita}, además se pueden incluir \texttt{palabras en fuente monoespaciada} o \underline{texto subrayado}. Además se pueden insertar listados:
+
+\begin{itemize}
+    \item Item principal
+    \begin{itemize}
+        \item Subitem 1
+        \item Subitem 2
+    \end{itemize}
+    \item Otro item principal
+\end{itemize}
+
+Enumeraciones de items:
+
+\begin{enumerate}
+    \item Primer Item
+    \begin{enumerate}
+        \item Subitem enumerado
+        \item Otro subitem enumerado
+    \end{enumerate}
+    \item Segundo item
+\end{enumerate}
+
+Con otro tipo de simbolos:
+
+\begin{itemize}[label=$\Rightarrow$]
+    \item Item 
+    \item Otro item
+        \begin{itemize}[label=$\blacktriangleright$]
+            \item Un subitem
+        \end{itemize}
+\end{itemize}
+
+También se pueden crear enumeraciones legales:
+
+\begin{enumerate}[label=\arabic*.]
+    \item Nivel 1, estilo legal, separado por puntos
+    \begin{enumerate}[label=\theenumi\arabic*.]
+        \item Nivel 2
+        \begin{enumerate}[label=\theenumii\arabic*.]
+            \item Nivel 3
+        \end{enumerate}
+    \end{enumerate}
+    \item Regreso al Nivel 1
+\end{enumerate}
+
+O enumeraciones arbitrarias:
+
+\begin{enumerate}[label=\arabic*.]
+    \item Primer nivel (Número)
+    \begin{enumerate}[label=\theenumi\alph*.]
+        \item Segundo nivel (Letra separada por punto)
+        \begin{enumerate}[label=\theenumii\roman*.]
+            \item Tercer nivel (Romano separado por punto)
+            \item Ejemplo de 1.a.ii.
+        \end{enumerate}
+    \end{enumerate}
+    \item Regreso al nivel 1
+    \begin{enumerate}[label=\theenumi\alph*.]
+        \item Ejemplo de 2.a.
+    \end{enumerate}
+\end{enumerate}
+
+\subsection{Ecuaciones}
+
+Para insertar una ecuación se debe contar con el paquete \texttt{amsmath} incluido en el preámbulo del documento, en el archivo \texttt{main.tex} (o el archivo que se configure para compilarse como principal). Se puede insertar una ecuación en línea $e=mc^2$, o una ecuación enumerada o no enumerada. \footnote{Para más información de cómo escribir expresiones matemáticas con código visitar la url \url{https://www.overleaf.com/learn/latex/Mathematical_expressions}}
+
+\begin{equation}
+    s(\omega) = \left[ \left(\frac{1}{2}\right)^2 e^{j \pi \omega} \right] \int_{-\infty}^{\infty} \sum_{i=0}^{i=10} a_i dx
+    \label{eq:algun_nombre}
+\end{equation}
+
+\begin{equation*}
+    x_1,x_2 = \frac{-b \pm \sqrt{b^2 -4ac} }{2a}
+\end{equation*}
+
+Se pueden hacer matrices
+
+\begin{equation}
+    x = \begin{bmatrix}
+        1 & 2 & 3\\
+        a & b & c
+        \end{bmatrix}
+\end{equation}
+
+Se pueden separar en renglones ecuaciones muy largas con \texttt{split}
+
+\begin{equation}
+    \begin{split}
+        a = a_1 sin(\omega_0 t) + a_2 sin(2\omega_0 t) + a_3 sin(3\omega_0 t) + a_4 sin(4\omega_0 t) + a_5 sin(5\omega_0 t) + a_6 sin(6\omega_0 t) \\ + a_7 sin(7\omega_0 t) + a_8 sin(8\omega_0 t)
+    \end{split}
+\end{equation}
+
+Se puede hacer un desarrollo de despejes agregando un caracter \texttt{\&} en el \textit{enviroment} \texttt{aligned} para alinear los miembros de ecuaciones
+
+\begin{equation}
+    \begin{split}
+        V_{out} &= V_{in} \frac{R_1}{R_1+R_2} \\
+        \frac{V_{in}}{V_{out}} &= \frac{R_1+R_2}{R_1} \\
+        \frac{V_{in}}{V_{out}} &= 1+\frac{R_2}{R_1} \\
+        \Aboxed{R_2 &= R_1 \left( \frac{V_{in}}{V_{out}} - 1 \right)}
+    \end{split}
+\end{equation}
+
+Además, se pueden mostrar sistemas de ecuaciones, o ecuaciones con casos con \texttt{cases}:
+
+\begin{equation}
+    \begin{cases}
+    x = 0 ~~ \forall ~~ x < 0\\
+    x = 1 ~~ \forall ~~ 0 \leq x \geq 1 \\
+    x = 0 ~~ \forall ~~ x > 1 
+    \end{cases}
+\end{equation}
+
+Las ecuaciones se pueden referenciar si se le asigna una etiqueta con el comando \texttt{label}, por ejemplo, en la \autoref{eq:algun_nombre} se asigno una etiqueta llamada \textit{eq:algun\_nombre} y se usó para referenciarla, si se repiten las etiquetas, el editor lo indicará como un error.
+
+También se puede escribir símbolos compuestos por múltiples letras, y unidades respetando el formato de IEEE. La \autoref{eq:non-comply-ieee} no cumple con este formato. La \autoref{eq:comply-ieee} lo hace, sin paquetes externos, y la \autoref{eq:comply-ieee-siunitx} lo hace, usando el paquete \textit{siunitx} (recomendado).
+
+\begin{equation}
+    SNR = 10~dB + 20\log\left(\frac{120~mW}{1~mW} \right)
+    \label{eq:non-comply-ieee}
+\end{equation}
+
+\begin{equation}
+    \mathrm{SNR} = 10~\text{dB} + 20 \log \left( \frac{120~\text{mW}}{1~\text{mW}} \right)
+    \label{eq:comply-ieee}
+\end{equation}
+
+\begin{equation}
+    \mathrm{SNR} = \qty{10}{dB} + 20 \log \left( \frac{\qty{120}{mW}}{\qty{1}{mW}} \right)
+    \label{eq:comply-ieee-siunitx}
+\end{equation}
+
+
+\subsection{Figuras}
+
+Para agregar figuras, asegurarse de contar con el paquete \texttt{graphicx} en el archivo a compilar. Notar que al igual que en las ecuaciones, se puede referenciar con la etiqueta, como el caso de la \autoref{fig:fm_radio_receiver}. Notar que el tamaño de la figura se especifica como un porcentaje del ancho del texto (delimitado por los márgenes). Al lado del inicio de la figura se puede especificar con una letra el lugar donde se quiere tratar de que \LaTeX ponga la figura, por ejemplo:
+
+\begin{itemize}
+    \item \texttt{h}: \textit{here} (\texttt{!h} más insistente)
+    \item \texttt{t}: \textit{top}
+    \item \texttt{b}: \textit{bottom}
+    \item \texttt{ht}: Intenta \textit{here}, si no se puede, \textit{top}
+    \item \textit{htbp}: here, top, bottom o flotante (p): Intenta ponerlo aquí, pero si no cabe, busca el mejor lugar
+\end{itemize}
+
+\begin{figure}[htbp]
+    \centering
+    %\includegraphics[width=0.8\textwidth]{figures/fm_radio_receiver.png}
+    \caption{Circuito Recetor de FM}
+    \label{fig:fm_radio_receiver}
+\end{figure}
+
+La \autoref{fig:tikzcirc} es un circuito diseñado con \url{https://circuit2tikz.tf.fau.de/designer/}, también se puede utilizar \url{https://tikzmaker.com/editor}
+
+\begin{figure}[htbp]
+    \centering
+    %\resizebox{0.75\textwidth}{!}{\input{figures/ej_circuitikz.tikz}}
+    \caption{Circuito de ejemplo con circuitkz}
+    \label{fig:tikzcirc}
+\end{figure}
+
+
+\subsection{Tablas}
+
+Se pueden generar tablas en \url{https://tablesgenerator.com/} (incluso se puede pegar desde Microsoft Excel, Libre Office Calc o Google Sheets y generar el código necesario). Al igual que con ecuaciones y figuras, se puede referenciar con la etiqueta: \autoref{tab:tabla_ejemplo}
+
+\begin{table}[!h]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+\rowcolor[HTML]{9698ED} 
+\textbf{} & \textbf{Columna 1} & \textbf{Columna 2} \\ \hline
+Fila 1 & $y = ax + b$ & 3 \\ \hline
+Fila 2 & 5 & test \\ \hline
+\end{tabular}
+\caption{Tabla de Ejemplo}
+\label{tab:tabla_ejemplo}
+\end{table}
+
+Si las tablas son demasiado grandes, se puede tildar la opción para que se ajusten al \texttt{textwidth} en \url{https://tablesgenerator.com/} 
+
+\subsection{Quotation Marks}
+
+En LaTeX, las comillas simples se generan usando ` (Ascii 92, acento grave) y ' (Ascii 39, comilla simple). Las comillas dobles se generan escribiendo `` (Dos veces acento grave) y '' (Dos veces comilla simple). El carácter " (Ascii 34, comilla doble no dirigida), produce comillas dobles de cierre: nunca debe usarse donde se requieren comillas de cierre).
+
+\begin{center}
+
+`Ejemplo de comillas simples bien utilizadas.' \\
+
+``Ejemplo de doble comillas simple bien utilizada.'' \\
+
+\spanishdeactivate{"}
+"Ejemplo de comillas dobles mal utilizadas."
+
+\end{center}
+
+El último ejemplo ni siquiera funciona si se usa el package \textit{babel} configurado en español.
+
+\subsection{Preambulo}
+
+Algunas menciones importantes de las lineas del preámbulo (antes de \textit{begin{document}} en main.tex):
+
+\begin{itemize}
+    \item documentclass{article}: Establece el tipo de documento. Hay otras clases para libros, tesis, etc.
+    \item usepackage[spanish,es-tabla]{babel}: al crear una imagen, tabla o ecuación, o al referenciarlas automáticamente se autocompletan con \textit{Figure}, \textit{Equation} y \textit{Table}. Para que estos textos (y otros) estén en español, se utiliza este paquete (y se configura para que diga \textit{Tabla} en lugar de \textit{Cuadro})
+    \item [a4paper,margin=1in]{geometry}: Establece el tamaño de papel y de margenes.
+\end{itemize}
+
+\subsection{Citas}
+
+Por último, se puede generar citas bibliográficas con bibtex, hay mucha documentación de cómo hacerlo en \href{https://www.overleaf.com/learn/latex/Bibliography_management_with_bibtex}{en este link}, pero se presenta un ejemplo sencillo. En cualquier artículo del IEEE se presenta una sección para copiar la información para poner en el archivo bib, este ejemplo se realizará con el artículo de \href{https://ieeexplore.ieee.org/document/8310054}{este enlace}. \cite{8310054}
+
+También se puede crear una entrada de bibliografía con los datos que se dispongan y citarla. \cite{ea3_2023}
+
+Además, se pueden referenciar secciones de este mismo trabajo (creando hipervínculos en el pdf): como este que refiere a la \autoref{section:two} o este otro que refiere a la \autoref{subsection:lorem-ipsum}
+
+\subsection{Tips}
+
+\begin{itemize}
+    \item Overleaf es particularmente útil porque se puede trabajar de manera colaborativa (como en Google Docs), se puede hacer comentarios (como el que está hecho aquí), y se ven en el editor. Hay mucha documentación en \url{https://www.overleaf.com/learn}
+    \begin{itemize}
+        \item Se pueden ver los comentarios en el botón \textbf{Review Panel} de la izquierda del editor
+        \item El documento se puede compartir con el botón \textbf{Share}
+        \item Para implementar un control de cambios se puede sincronizar el proyecto con GitHub en el menú de integraciones.
+        \item En la versión gratuita de Overleaf hay un límite de personas que pueden tener el documento compartido (hasta 3) y no se puede hacer un `control de cambios' en vivo. La versión gratuita también tiene un tiempo máximo de compilación, si tienen muchas imagenes muy `pesadas' es probable que necesiten usar un editor de \LaTeX offline
+        \item Existe un chat entre los que estén conectados al documento. 
+        \item Si el documento es pequeño se puede activar la auto-compilación para ver los cambios en el PDF en vivo (útil para empezar, pero a medida que se acostumbran es mejor compilar manualmente luego de muchos cambios). También existe la versión de compilación borrador (\textit{draft}), que no compila imágenes.
+        \item Para insertar imágenes, se puede pegar directamente (Ctrl+V), abriendo un cuadro de dialogo para definir nombre, ubicación y ancho de la imagen, generando el código automáticamente.
+        \item En Layout pueden modificar las ventanas para ver solo el código, o poner el PDF en otra pestaña
+        \item En Menú (Esquina superior izquierda) pueden modificar el estilo del editor, el tema (poner modo oscuro), la fuente del editor, cambiar el idioma del corrector, el compilador, el archivo principal, etc. Además, pueden descargar el código fuente con todas las imagenes, o el PDF renderizado.
+    \end{itemize}
+    \item Overleaf tiene muy bajo tiempo de compilación permitido, para proyectos muy grandes que lo superan se puede evitar usar las opciones pagas de dos maneras:
+    \begin{itemize}
+        \item Activar el modo draft para trabajar colaborativamente y corroborar que funciona el código
+        \item Si el modo draft no es suficiente, se pueden comentar bloques de código con los comandos \textit{begin{comment}} y \textit{end{comment}}
+    \end{itemize}
+    \item Hay muchas aplicaciones para editar \LaTeX offline, luego de usar las opciones anteriores se puede descargar alguna de estas alternativas 
+    \begin{itemize}
+        \item TeXStudio (\url{https://www.texstudio.org/}) + Miktex (\url{https://miktex.org/download}). TexStudio tiene un gestor de paquetes para descargar e instalar todos los paquetes que incluyen en el preámbulo.
+        \item Se puede compilar directo en Visual Studio Code, utilizando la extensión LaTeX Workshop (\url{https://marketplace.visualstudio.com/items?itemName=James-Yu.latex-workshop}, es necesario también instalar Strawberry Perl para compilar \texttt{latexmk}, un script que automatiza la generación de los PDFs (\url{https://strawberryperl.com/}) y Miktex para instalar paquetes.
+    \end{itemize}
+    
+    
+    \item Hay muchos tutoriales disponibles, un aspecto importante de usar \LaTeX es utilizar la document class adecuada y saber buscar (preferentemente en inglés) lo que se necesita \url{https://www.overleaf.com/learn/latex/Learn_LaTeX_in_30_minutes}
+    \item Existe un libro (no tan corto) de introducción a \LaTeX, para tener de referencia algunas funciones: \url{https://tobi.oetiker.ch/lshort/lshort.pdf}
+    \item La documentación de la mayoría de los paquetes se puede encontrar en CTAN: \url{https://www.ctan.org/}
+    \item Para escribir una tesis o proyecto integrador, puede ser interesante hacer un documento doble faz: \url{https://www.overleaf.com/learn/latex/Single_sided_and_double_sided_documents}
+    \item Se puede modificar el tamaño de página y los márgenes \url{https://www.overleaf.com/learn/latex/Page_size_and_margins}
+    \item Se pueden insertar PDFs enteros o partes de PDF directamente en el documento: \url{https://latex-tutorial.com/insert-pdf-file/}
+    \item Se puede cambiar el estilo de listas de enumeración (1, 1.a, 1.b; 1, 1.1, 1.2; I, I.I, I.II): \url{https://www.overleaf.com/learn/latex/Lists}
+    \item Se pueden personalizar los encabezados y pie de página: \url{https://es.overleaf.com/learn/latex/Headers_and_footers}
+    \item Se puede reutilizar código de un informe para hacer presentaciones con beamer: \url{https://es.overleaf.com/learn/latex/Beamer}
+    \item Se puede incluir imagenes en formato PDF para evitar que se pixelen: \url{https://www.ctan.org/pkg/pdfpages}
+    \item Se puede cambiar la separación de párrafos, lineas, tamaños de fuentes y familias de fuentes.
+    \item Existen paquetes para dibujar circuitos con código, no es recomendable si se usa Overleaf y hay una gran cantidad de circuitos en el documento, por el tiempo de compilación: Las documentación de este paquete es muy extensa: \url{https://es.overleaf.com/learn/latex/CircuiTikz_package} y \url{https://ctan.dcc.uchile.cl/graphics/pgf/contrib/circuitikz/doc/circuitikzmanual.pdf}
+    \item En lugar de usar circuitikz, desde el 2023 existe una interfaz gráfica que genera el código.
+    \item Usar la bibliografía con bibtex tiene la enorme ventaja de que fácilmente puede cambiarse el formato de las citas y las referencias, para adecuarse con los formatos solicitados por la facultad, congresos, revistas, etc. Se puede alterar el orden de las referencias, dividirlas según su tipo, y citar cosas con DOI (Digital object identifier) como artículos y libros, sitios web o cualquier tipo de material académico. Consultar la documentación: \url{https://www.overleaf.com/learn/latex/Bibliography_management_with_bibtex}
+\end{itemize}
+
+\subsection{Comentarios finales}
+
+\begin{itemize}
+    \item Este documento está dirigido a fomentar el uso de \LaTeX para la generación de informes académicos.
+    \item En este link se encontrará la versión más nueva de este template: \url{https://www.overleaf.com/read/ssfxdztpsbsx#13d015}
+    \item Existe otro template para hacer presentaciones: \url{https://www.overleaf.com/read/qcbhtvtbythb#c59265}
+    \item Dirigir comentarios y sugerencias a \href{mailto:federico.tomas.dadam+template@unc.edu.com.ar}{federico.tomas.dadam@unc.edu.com.ar}
+\end{itemize}

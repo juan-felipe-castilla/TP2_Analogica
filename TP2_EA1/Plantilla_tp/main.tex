@@ -1,0 +1,58 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage{amsmath}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{subcaption}
+\usepackage{amssymb}
+\usepackage[hidelinks]{hyperref}
+\usepackage{mathtools}
+\usepackage[table,xcdraw]{xcolor}
+\usepackage{biblatex}
+\usepackage{enumitem}
+\usepackage{csquotes}
+\usepackage{circuitikz}
+\usepackage{siunitx}
+
+%Formateo etiquetas
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,    
+    citecolor=blue,
+    urlcolor=blue,
+    filecolor=blue
+}
+
+\addbibresource{bibliografia.bib} %archivo de bibliografia
+
+\begin{document}
+
+%Configuro referencias automáticas
+\renewcommand{\figureautorefname}{Fig.}
+\renewcommand{\tableautorefname}{Tab.}
+\renewcommand{\equationautorefname}{Ec.}
+
+\input{titlepage}
+\newpage
+\vspace*{\fill}
+\begin{center}
+    (Página intencionalmente blanca) % Dejar para escribir los comentarios de corrección sobre esta página
+\end{center}
+
+\newpage
+
+\tableofcontents
+\newpage
+\listoffigures
+\newpage
+\listoftables
+
+\newpage
+
+\input{seccion1}\label{section:one}
+\newpage
+\input{seccion2}
+\newpage
+\printbibliography
+\end{document}
