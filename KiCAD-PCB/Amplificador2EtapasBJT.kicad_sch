@@ -982,12 +982,6 @@
     (uuid ff739082-41a2-4d5f-83f7-998e1c985a4b)
   )
 
-  (text "Dados los requerimientos de mediciones de transistores, se colocaron TestPoints en aquellos nodos donde la medicion con multimetros \nrepresente un peligro de realizar un puente entre pines de manera accidental, por ello, y para simplificar el disenio de PCB, \nlas mediciones de Vb.Ve y Vc se haran desde los terminales de las reistencias montadas que pertenezcan al nodo correspondiente"
-    (at 15.24 21.59 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 3be97c10-4a75-42dc-a609-19650530708c)
-  )
-
   (symbol (lib_id "Connector:Screw_Terminal_01x02") (at 248.92 93.98 0) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 0636376a-d556-44b6-a7a5-67eabcde69a8)
