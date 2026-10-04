@@ -176,8 +176,8 @@ ZiSz = 2.1131e+04; % Impedancia de entrada del amplificador Sziklai
 x1 = linspace(0, 11.3, 100);
 Ic1 = (Vcc-0.7)/(Bn*Red) - x1/(Bn*Red);
 Rca1 = Bn/(1/Red + 1/ZiEC);
-x2 = linspace(0, R1(2)*Rca1+R1(4), 100);
-ic1 = R1(2) - 1/Rca1 *(x2 - R1(4));
+x2 = linspace(0, R1(3)*Rca1+R1(4), 100);
+ic1 = R1(3) - 1/Rca1 *(x2 - R1(4));
 
 figure(1);
 plot(x1, Ic1, 'r', 'LineWidth', 1.5);
@@ -185,7 +185,7 @@ hold on;
 plot(x2, ic1, 'r', 'LineWidth', 1);
 hold on;
 %Punto Q
-plot(R1(4), R1(2), 'ro', 'markersize', 8, 'markerfacecolor', 'r');
+plot(R1(4), R1(3), 'ro', 'markersize', 8, 'markerfacecolor', 'r');
 title('Recta de Carga CC - CA - Q1 (Darlington)');
 xlabel('Vce1 [V]'); ylabel('Ic1 [A]');
 grid on;
@@ -195,8 +195,8 @@ hold off;
 x3 = linspace(0, 12, 100);
 Ic2 = Vcc/Red - x3/Red;
 Rca2 = 1/((1/Red+1/ZiEC));
-x4 = linspace(0, R1(6)*Rca2+R1(8), 100);
-ic2 = R1(6) - 1/Rca2 *(x4 - R1(8));
+x4 = linspace(0, R1(7)*Rca2+R1(8), 100);
+ic2 = R1(7) - 1/Rca2 *(x4 - R1(8));
 
 figure(2);
 plot(x3, Ic2, 'b', 'LineWidth', 1.5);
@@ -204,7 +204,7 @@ hold on;
 plot(x4, ic2, 'b', 'LineWidth', 1);
 hold on;
 %Punto Q
-plot(R1(8), R1(6), 'bo', 'markersize', 8, 'markerfacecolor', 'b');
+plot(R1(8), R1(7), 'bo', 'markersize', 8, 'markerfacecolor', 'b');
 title('Recta de Carga CC - CA - Q2 (Darlington)');
 xlabel('Vce2 [V]'); ylabel('Ic2 [A]');
 grid on;
@@ -215,8 +215,8 @@ x5 = linspace(0, 12, 100);
 Rcc3 = Ree + (Bn*Rce)/(Bn+1);
 Ic3 = Vcc/Rcc3 - x5/Rcc3;
 Rca3 = 1/(1/Rce+1/ZiSz);
-x6 = linspace(0, R2(2)*Rca3+R2(4), 100);
-ic3 = R2(2) - (x6 - R2(4))/Rca3;
+x6 = linspace(0, R2(3)*Rca3+R2(4), 100);
+ic3 = R2(3) - (x6 - R2(4))/Rca3;
 
 figure(3);
 plot(x5, Ic3, 'g', 'LineWidth', 1.5);
@@ -224,7 +224,7 @@ hold on;
 plot(x6, ic3, 'g', 'LineWidth', 1);
 hold on;
 %Punto Q
-plot(R2(4), R2(2), 'go', 'markersize', 8, 'markerfacecolor', 'g');
+plot(R2(4), R2(3), 'go', 'markersize', 8, 'markerfacecolor', 'g');
 title('Recta de Carga CC - CA - Q3 (Emisor Común)');
 xlabel('Vce3 [V]'); ylabel('Ic3 [A]');
 grid on;
@@ -234,7 +234,7 @@ hold off;
 x7 = linspace(0, Vcc-0.7, 100);
 Ic4 = ((1+Bn)*(Vcc-0.7-x7))/(Res*(Bn*Bp+Bn+1)+Bn*Rcb);
 Rca4 = ((1/(1/Res + 1/(Ro+Rl)))*(Bn*Bp+Bn+1)+Bn*Rcb)/Bn;
-ic4 = R3(2)-(x7-R3(4))/Rca4;
+ic4 = R3(3)-(x7-R3(4))/Rca4;
 
 figure(4);
 plot(x7, Ic4, 'y', 'LineWidth', 1.5);
@@ -242,7 +242,7 @@ hold on;
 plot(x7, ic4, 'y', 'LineWidth', 1);
 hold on;
 %Punto Q
-plot(R3(4), R3(2), 'yo', 'markersize', 8, 'markerfacecolor', 'y');
+plot(R3(4), R3(3), 'yo', 'markersize', 8, 'markerfacecolor', 'y');
 title('Recta de Carga CC - CA - Q4 (Sziklai)');
 xlabel('Vce4 [V]'); ylabel('Ic4 [A]');
 grid on;
@@ -252,7 +252,7 @@ hold off;
 x8 = linspace(0, Vcc, 100);
 Ic5 = (Bn*(1+Bp)*(Vcc-x8))/(Res*(Bn*Bp+Bn+1));
 Rca5 = ((1/(1/Res + 1/(Ro+Rl)))*(Bn*Bp+Bn+1))/(Bn*(Bp+1));
-ic5 = R3(6) - (x8-R3(8))/Rca5;
+ic5 = R3(7) - (x8-R3(8))/Rca5;
 
 figure(5);
 plot(x8, Ic5, 'm', 'LineWidth', 1.5);
@@ -260,7 +260,7 @@ hold on;
 plot(x8, ic5, 'm', 'LineWidth', 1);
 hold on;
 %Punto Q
-plot(R3(8), R3(6), 'mo', 'markersize', 8, 'markerfacecolor', 'm');
+plot(R3(8), R3(7), 'mo', 'markersize', 8, 'markerfacecolor', 'm');
 title('Recta de Carga CC - CA - Q5 (Sziklai)');
 xlabel('Vce3 [V]'); ylabel('Ic3 [A]');
 grid on;
