@@ -167,8 +167,8 @@ disp("");
 hie5 = double((Vt*Bp)/R3(7))
 
 Vcc = 12;
-ZiEC = 2129.54; % Impedancia de entrada del amplificador Em Com
-ZiSz = 441; % Impedancia de entrada del amplificador Sziklai
+ZiEC = 2129.5; % Impedancia de entrada del amplificador Em Com
+ZiSz = 2.1131e+04; % Impedancia de entrada del amplificador Sziklai
 
 % Rectas de carga
 
@@ -369,22 +369,3 @@ vo = vi*Av;
 IRo = vo/(Ro+Rl); % = IRl
 PRo = IRo^2*Ro
 PRl = IRo^2*Rl
-
-disp('');
-disp(' Impedancias' );
-disp('');
-disp('Darlington');
-ZinD = 1/(1/Rbd + 1/((hie1+(Bn+1)*(hie2+(Bn+1)*Red))))
-ZoutD = 1/(1/Red + 1/(hie2/(Bn+1) + (Rbd+hie1)/(Bn+1)^2))
-disp('');
-disp('Emisor Común');
-ZinEC = 1/(1/Rbb + 1/hie3)
-ZoutEC = Rce
-disp('');
-disp('Sziklai');
-Req1 = 1/(1/Res+1/(Ro+Rl));
-Req2 = (1+Bn*Bp)*Req1;
-Req3 = Rcb+hie5;
-ZinS = 1/(1/Rbbn + 1/(hie4+Req2) +1/Req3)
-Req4 = hie4 + 1/(1/(Rcb+hie5) + (Bn*Bp+1)/Rbbn)
-ZoutS = (1/(1/Res + 1/Req4))

@@ -58,7 +58,7 @@ G(6,5) = -(1 - Bn)/hie4;
 G(6,6) = (1 - Bn)/hie4 + 1/Res + 1/Ro;
 G(6,7) = -1/Ro;
 
-% Nodo N008 (Fila 7)
+% Nodo N008 (Fila 7) Salida
 G(7,6) = -1/Ro;
 G(7,7) = 1/Ro + 1/Rl;
 
