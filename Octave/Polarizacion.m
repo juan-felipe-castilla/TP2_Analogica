@@ -156,15 +156,15 @@ R3 = Q3\S3;
 
 Vt = 25/1000;
 disp("");
-hie1 = double((Vt*Bn)/(R1(3)))
+hie1 = double((Vt*Bn)/(R1(2)))
 disp("");
-hie2 = double((Vt*Bn)/R1(7))
+hie2 = double((Vt*Bn)/R1(6))
 disp("");
-hie3 = double((Vt*Bn)/R2(3))
+hie3 = double((Vt*Bn)/R2(2))
 disp("");
-hie4 = double((Vt*Bn)/R3(3))
+hie4 = double((Vt*Bn)/R3(2))
 disp("");
-hie5 = double((Vt*Bp)/R3(7))
+hie5 = double((Vt*Bp)/R3(6))
 
 Vcc = 12;
 ZiEC = 2129.5; % Impedancia de entrada del amplificador Em Com

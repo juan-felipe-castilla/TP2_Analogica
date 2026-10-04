@@ -11,13 +11,13 @@ R1s = 47000;
 R2s = 100000;
 Res = 10;
 Rcb = 100;
-Ro  = 75/10;
+Ro  = 7.5;
 Rl  = 8;
-hie1 = 3443.6;
-hie2 = 34.0;
-hie3 = 2357.3;
-hie4 = 310.53;
-hie5 = 3.1053;
+hie1 = 3478.1;
+hie2 = 34.436;
+hie3 = 2380.9;
+hie4 = 313.64;
+hie5 = 3.1364;
 Rbb  = (R1e*R2e)/(R1e+R2e);
 Rbbn = (R1s*R2s)/(R1s+R2s);
 Bn = 100;
@@ -52,6 +52,7 @@ B2 = Bn / hie3;
 
 V2_sol = G2 \ (B2 * vi2);
 v_N004 = V2_sol;
+disp('');
 disp('Ganancia Emisor Común');
 Av2 = v_N004 / vi2
 disp('');
@@ -78,6 +79,7 @@ v_N006 = V3(1);
 v_N007 = V3(2);
 v_N009 = V3(3);
 v_N010 = V3(4);
+disp('');
 disp('Ganancia Sziklai');
 Av3 = v_N010 / vi3
 disp('');
