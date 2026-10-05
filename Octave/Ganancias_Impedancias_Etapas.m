@@ -48,7 +48,7 @@ ZoutD = 1/(1/Red + 1/(hie2/(Bn+1) + (Rbd+hie1)/(Bn+1)^2))
 vi2 = 1;
 
 G2 = 1 / Rce;
-B2 = Bn / hie3;
+B2 = - Bn / hie3;
 
 V2_sol = G2 \ (B2 * vi2);
 v_N004 = V2_sol;
@@ -83,7 +83,7 @@ disp('');
 disp('Ganancia Sziklai');
 Av3 = v_N010 / vi3
 disp('');
-disp(' Impedancia' );
+ disp(' Impedancia' );
 Req1 = (Bn+1)*(Bp+1)*(1/(1/Res+1/(Ro+Rl)));
 ZinS = 1/(1/Rbbn + 1/(hie4+Req1))
 Req2 = (hie4+Rbbn)/((Bn+1)*(Bp+1));

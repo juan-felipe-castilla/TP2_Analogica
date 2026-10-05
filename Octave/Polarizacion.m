@@ -174,8 +174,8 @@ ZiSz = 2.1131e+04; % Impedancia de entrada del amplificador Sziklai
 
 %Gráfico Transistor Q1
 x1 = linspace(0, 11.3, 100);
-Ic1 = (Vcc-0.7)/(Bn*Red) - x1/(Bn*Red);
-Rca1 = Bn/(1/Red + 1/ZiEC);
+Ic1 = (Vcc-0.7)/((Bn+1)*Red) - x1/((Bn+1)*Red);
+Rca1 = (Bn+1)/(1/Red + 1/ZiEC);
 x2 = linspace(0, R1(3)*Rca1+R1(4), 100);
 ic1 = R1(3) - 1/Rca1 *(x2 - R1(4));
 
