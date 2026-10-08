@@ -1,0 +1,15 @@
+LTspice 26.0.2 for Windows
+Circuit: C:\Users\54346\Documents\GitHub\TP2_Analogica\Simu\AmpFinalEstadiscamentecorrecto.net
+Start Time: Wed Oct  7 14:49:21 2026
+solver = Normal
+Maximum thread count: 8
+tnom = 27
+temp = 27
+method = trap
+Direct Newton iteration succeeded in finding operating point.
+Total elapsed time: 0.224 seconds.
+
+Files loaded:
+C:\Users\54346\Documents\GitHub\TP2_Analogica\Simu\AmpFinalEstadiscamentecorrecto.net
+C:\Users\54346\AppData\Local\LTspice\lib\cmp\standard.bjt
+

@@ -1,0 +1,83 @@
+\documentclass[border=5mm]{standalone}
+\usepackage[siunitx, american]{circuitikz}
+
+\begin{document}
+\begin{circuitikz}[scale=0.85, transform shape, line width=0.6pt]
+    
+    % ---------------------------------------------------
+    % ETAPA 1: Entrada y Par Darlington (Q1, Q2)
+    % ---------------------------------------------------
+    % Fuente de entrada y NodoInput
+    \draw (0,0) node[ground]{} 
+          to[sV, l=$V_1$] (0,4)
+          to[short, -*] (1.5,4) node[above]{NodoInput}
+          to[short] (3,4) node[above]{B1};
+          
+    % Resistencia de base Q1
+    \draw (3,4) to[R, l=$R_{BD}$] (3,0) node[ground]{};
+    
+    % Transistor Q1 (NPN)
+    \draw (3,4) to[R, l=$h_{ie1}$, i=$i_{b1}$] (6,4) node[above right]{E1};
+    \draw (6,7) node[ground, rotate=180]{} node[right]{C1} 
+          to[cI, l=$\beta i_{b1}$] (6,4); 
+    
+    % Transistor Q2 (NPN)
+    \draw (6,4) to[short] (8,4) node[above]{B2};
+    \draw (8,4) to[R, l=$h_{ie2}$, i=$i_{b2}$] (11,4) node[above right]{E2};
+    \draw (11,7) node[ground, rotate=180]{} node[right]{C2} 
+          to[cI, l=$\beta i_{b2}$] (11,4); 
+    
+    % Resistencia de emisor Q2
+    \draw (11,4) to[R, l=$R_{ED}$] (11,0) node[ground]{};
+
+    % ---------------------------------------------------
+    % ETAPA 2: Emisor Común (Q3)
+    % ---------------------------------------------------
+    % Resistencias de polarización separadas (R1E y R2E)
+    \draw (11,4) to[short] (12.5,4);
+    \draw (12.5,4) to[R, l=$R_{1E}$] (12.5,0) node[ground]{};
+    \draw (12.5,4) to[short] (14,4);
+    \draw (14,4) to[R, l=$R_{2E}$] (14,0) node[ground]{};
+    
+    % Transistor Q3 (NPN)
+    \draw (14,4) to[short] (15.5,4) node[above]{B3};
+    \draw (15.5,4) to[R, l=$h_{ie3}$, i=$i_{b3}$] (15.5,0) node[below right]{E3} node[ground]{};
+    \draw (18,4) node[above]{C3} 
+          to[cI, l=$\beta i_{b3}$] (18,0) node[below right]{E3} node[ground]{};
+          
+    % Resistencia de colector de Q3
+    \draw (18,4) to[short] (19.5,4) 
+          to[R, l=$R_{CE}$] (19.5,0) node[ground]{};
+
+    % ---------------------------------------------------
+    % ETAPA 3: Par Sziklai y Carga (Q4, Q5, Salida)
+    % ---------------------------------------------------
+    % Resistencias de polarización separadas (R1S y R2S)
+    \draw (19.5,4) to[short] (21,4);
+    \draw (21,4) to[R, l=$R_{1S}$] (21,0) node[ground]{};
+    \draw (21,4) to[short] (22.5,4);
+    \draw (22.5,4) to[R, l=$R_{2S}$] (22.5,0) node[ground]{};
+    
+    % Transistor Q4 (NPN)
+    \draw (22.5,4) to[short] (24,4) node[above]{B4};
+    \draw (24,4) to[R, l=$h_{ie4}$, i=$i_{b4}$] (27,4) node[below right]{E4};
+    \draw (27,7) node[left]{C4} 
+          to[cI, l=$\beta i_{b4}$] (27,4);
+    
+    % Transistor Q5 (PNP)
+    \draw (27,7) node[above left]{B5} 
+          to[R, l=$h_{ie5}$, i<=$i_{b5}$] (30,7) node[above right]{E5} node[ground, rotate=180]{};
+    \draw (30,7) to[cI, l=$\beta i_{b5}$] (30,4) node[below]{C5};
+    \draw (30,4) to[short] (27,4); 
+    
+    % NodoOut y resistencia de emisor Sziklai
+    \draw (27,4) to[short, -*] (29,4) node[above]{NodoOut};
+    \draw (29,4) to[R, l=$R_{ES}$] (29,0) node[ground]{};
+    
+    % Red de Carga final (RO y RL en serie)
+    \draw (29,4) to[short] (31,4) 
+          to[R, l=$R_O$] (31,2) 
+          to[R, l=$R_L$] (31,0) node[ground]{};
+
+\end{circuitikz}
+\end{document}
