@@ -82,12 +82,12 @@ v_N010 = V3(4);
 disp('');
 disp('Ganancia Sziklai');
 Av3 = v_N010 / vi3
+Av4 = v_N009/vi3
 disp('');
- disp(' Impedancia' );
-Req1 = (Bn+1)*(Bp+1)*(1/(1/Res+1/(Ro+Rl)));
+disp(' Impedancia' );
+RefFactIn = (Bn*Bp + Bn + 1);
+Req1 = RefFactIn*(1/(1/Res+1/(Ro+Rl)));
 ZinS = 1/(1/Rbbn + 1/(hie4+Req1))
-Req2 = (hie4+Rbbn)/((Bn+1)*(Bp+1));
-ZoutS = (1/(1/Res + 1/Req2)) + Ro
-
-
-
+A = 1/Res + 1/Ro +1/(hie4+Rbbn);
+B = (Bn*Bp+Bn)/(hie4+Rbbn);
+ZoutS = (Ro*(A+B)-1)/(A+B)

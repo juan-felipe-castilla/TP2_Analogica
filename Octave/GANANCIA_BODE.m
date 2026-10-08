@@ -118,6 +118,7 @@ for k = 1:length(f)
     Av_phase(k) = angle(Av) * (180 / pi) - 180;
 end
 
+
 % Gráfica de Bode
 figure;
 subplot(2,1,1);
@@ -145,6 +146,7 @@ disp(abs(Gain_5kHz));
 fprintf('\n   Vi (mV)     Vo de salida (V)\n');
 fprintf('---------------------------------\n');
 for k = 1:length(Vi)
-    fprintf('   %7.1f       %10.4f\n', Vi(k)*1000, Vo(k));
+    fprintf('   %7.1f       %10.4f\n', Vi(k)*1000, Vo(k)*1000
+);
 end
 
