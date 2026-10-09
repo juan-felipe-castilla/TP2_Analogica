@@ -1,0 +1,525 @@
+\section{Desarrollo}
+
+\subsection{Diseño}
+
+\subsubsection{Definición de Parámetros con Python}
+
+Debido a que era necesario definir una gran cantidad de parámetros del amplificador global, además de agregar una etapa adicional (se seleccionó la configuración Sziklai), se optó por generar la \textit{netlist} con LTspice para simular los circuitos mediante Python. De esta manera se pudo iterar sobre diversos valores hasta obtener una configuración apropiada, la cual posteriormente fue sometida a pruebas para verificar el cumplimiento de los requisitos planteados.
+
+Para la generación de los scripts utilizados (disponibles en la referencia al repositorio), se empleó Gemini Pro. A continuación se detalla el proceso de cálculo seguido, los scripts implementados y el enfoque de cada uno.
+
+\vspace{0.5em}
+{\small\textbf{Reconocimiento Nominal}}
+
+Se utilizó el script \texttt{optimizador\_maestro} para explorar combinaciones de resistencias hasta hallar un circuito que cumpliera con los cuatro parámetros exigidos:
+\begin{itemize}
+  \item Ganancia $A_V > 75$.
+  \item Prioridad en máxima excursión simétrica.
+  \item Impedancia de entrada $Z_{\text{in}} > 350\,\text{k}\Omega$.
+  \item Impedancia de salida $Z_{\text{out}} = 8\,\Omega \pm 5\,\%$.
+\end{itemize}
+
+Una vez encontrada una combinación satisfactoria, esta fue catalogada como «Candidata».
+
+\vspace{0.5em}
+{\small\textbf{Prueba de Montecarlo}}
+
+Con la combinación «Candidata» seleccionada, se ejecutó el script \texttt{test\_montecarlo\_rapido}, el cual somete al circuito a 30 simulaciones. En cada ejecución se altera aleatoriamente el valor de todas las resistencias dentro de un margen del $5\%$ (tolerancia típica de componentes comerciales).
+
+El código evalúa cuántas de las 30 simulaciones logran cumplir con los requisitos estipulados. Si el circuito colapsa y su tasa de supervivencia cae por debajo del $85\%$, el script lo descarta por considerarlo un diseño inestable. De este modo, solo se aprueban configuraciones que soporten la dispersión de los componentes.
+
+Adicionalmente, el script posiciona en el primer lugar al diseño que garantice la máxima excursión de tensión simétrica, incluso en el peor escenario de tolerancias posible. Para su correcto funcionamiento, el script utiliza el archivo \texttt{template.net}, en el cual se encuentra la \textit{netlist} de simulación de LTspice junto con las directivas de medición para verificar los requisitos.
+
+\vspace{0.5em}
+{\small\textbf{Análisis en Corriente Continua y Frecuencia}}
+
+Se utilizó el programa \texttt{analisis\_dc\_excel}, cuyo objetivo es realizar un diagnóstico integral del amplificador diseñado mediante la simulación de un archivo \texttt{.net}, exportando los resultados a una planilla.
+
+En primer lugar, analiza el circuito en estado de reposo (sin señal de entrada) y determina las tensiones de todos los nodos. Con estos valores calcula la caída de tensión colecotor-emisor ($V_{\text{CE}}$), la corriente y la potencia disipada en cada transistor y resistencia, diagnosticando además el punto de trabajo de cada transistor (zona activa, corte o saturación).
+
+Posteriormente, reemplaza la fuente senoidal por una fuente de barrido AC (\texttt{AC 1}) desde $1\,\text{Hz}$ hasta $1\,\text{MHz}$, aplicando los comandos de medición de LTspice (\texttt{TRIG} y \texttt{FALL}) para ubicar los puntos donde la ganancia cae $-3\,\text{dB}$. Entrega la ganancia de tensión de cada etapa individual y el ancho de banda total (frecuencias de corte inferior y superior).
+
+Por último, aplica una señal de prueba a $2\,\text{kHz}$ y mide las tensiones pico a pico en la salida del preamplificador, la etapa VAS y la etapa Sziklai final. Simultáneamente, efectúa un análisis de Fourier (\texttt{.four}) en cada nodo para medir la Distorsión Armónica Total (THD).
+
+\vspace{0.5em}
+{\small\textbf{Prueba Montecarlo Final}}
+
+Este tercer código (MontecarloDefinitivo) es un Control de Calidad. Toma el circuito seleccionado y ejecuta 100 pruebas de tolerancia teniendo en cuenta los requisitos. Utiliza los valores de la configuración seleccionada y aplica un margen de error aleatorio del $5\%$ a cada una de las resistencias nominales, ensambla y simula los 100 circuitos virtuales distintos e informa el porcentaje de supervivencia de las pruebas y desglosa cuantas veces fallo en cada requisito. Al igual que en el resto de códigos, se utilizó un archivo \texttt{template.net}.
+
+Si bien esto ahorra trabajo, no implica que las etapas de diseño y simulación estén obsoletas. Comcluido este análisis preliminar se hicieron comprobaciones por otros métodos para calcular y simular los valores efectivos del amplificador, partiendo de los valores obtenidos con estos scripts.
+
+\subsubsection{Verificación  y Cálculos Finales con Octave}
+
+Antes de comenzar con este análisis es necesario aclarar que, ya que este era un cálculo teórico del comportamiento del amplificador que luego, de ser necesario, sería ajustado por simulación, se hicieron ciertas simplificaciones. Se consideraron iguales a todos los transistores, tomando su caída de tensión emisor-base como 0.7 volts y un \beta de 100, sin hacer la distinción entre tipos de transistores.
+
+Habiendo definido los parámetros comerciales de resistencias que se utilizrían en el circuito, se lo resolvió en Octave utilizando los modelos precentados anteriormente. Con esto se obtuvo un cálculo preciso del punto de trabajo de cada transistor y se pudieron graficar las rectas de carga de cada uno de estos.
+
+A continuación se presentarán los gráficos obtenidos con su respectivo punto Q.
+
+\begin{figure}[H]
+  \centering
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{Imagenes/RectaQ1.png}
+    \caption{Rectas de carga de Q1}
+    \label{RectaQ1}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{Imagenes/RectaQ2.png}
+    \caption{Rectas de carga de Q2}
+    \label{RectaQ2}
+  \end{minipage}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \resizebox{250}{!}{
+  \includegraphics{Imagenes/RectaQ3.png}
+  }
+  \caption{Rectas de Carga de Q3}
+  \label{RectaQ3}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \resizebox{250}{!}{
+      \includegraphics{Imagenes/RectaQ4.png}
+    }
+    \caption{Rectas de Carga de Q4}
+    \label{RectaQ4}
+  \end{minipage}
+  \hfill
+  \begin{minipage}{0.48\textwidth}
+    \centering
+    \resizebox{250}{!}{
+      \includegraphics{Imagenes/RectaQ5.png}
+    }
+    \caption{Rectas de Carga de Q5}
+    \label{RectaQ5}
+  \end{minipage}
+\end{figure}
+
+En estas rectas se puede ver que los componentes calculados con anterioridad dejan a los transistores polarizados en puntos alejados de la seturación ($v_{ce} = 0$) y corte ($v_{ce} = Alimentación$) y, si bien no de manera exacta, cerca de la máxima excursión simétrica. 
+
+Para esto último la que es de mayor interés es la recta del Emisor Común (\cref{RectaQ3}), ya que es esta la etapa amplificadora en el diseño y, como se aprecia en la figura, tiene una gran capacidad de escursión, lo que permite amplificar señales de mayor amplitud.
+
+También es posible ver que, como era previsible, el amplificador Darlington (\cref{RectaQ1} y \cref{RectaQ2}) no tiene variación efectiva en alterna. Esto es porque posee una amplificación unitaria, lo cual no afecta al diseño ya que su porpósito es dar una alta impedancia de entrada al circuito.
+
+Una aclaración importante en este punto es que el amplificador Sziklai por si solo (midiendo su ganancia en el nodo de $R_{ES}$) tiene un valor de ganancia ligeramente menor a uno, sin embargo, tiene una impedancia de salida muy pequeña (en el orden de los $m\Omega$), por lo que se implementó la $R_O$ para aumentar esa impedancia de salida y que alcanze los ocho Ohms. 
+
+Esto tiene el efecto de, al medir la ganancia en el verdadero punto de salida del amplificador (luego de $R_O$), esta se vea dividida aproximadamente por un factor de dos en este caso. Esto porque al circuito se lo está cargando con una impedancia $R_L$ muy similar a esta $R_O$, creando un divisor de tensión con impedancias similares.
+
+Continuando con el análisis del circuito, se resolvió el modelo de pequeña señal simplificado (\cref{fig:AmpTotPS}) para obtener un valor total de ganancia y los modelos de cada etapa (\cref{fig:Dar_PS}, \cref{fig:EMPS} y \cref{fig:SzPS}) para obtener la ganancia teórica de cada una.
+
+EL circuito final del amplificador (\cref{AmpconC}) fue resuelto de manera iterativa para obtener los distintos valores de ganancia en función de la frecuencia, lo que también permite hacer una corroboración del valor teórico obtenido, y los valores de tensión de salida para un conjunto de tensiones de entrada a una dada frecuencia. El gráfico de Bode del amplificador.
+
+\begin{figure}[H]
+  \centering
+  \resizebox{250}{!}{
+    \includegraphics{Imagenes/Bode.png}
+  }
+  \caption{Magnitud y Fase de la amplificaión teórica}
+  \label{Bode}
+\end{figure}
+
+Como se puede ver en \cref{Bode}, la canancia toma, en las frecuencias mayores a $2kHz$ que es la zona apropiada de operación del circuito, un valor de ganancia estable de una magnitud suficiente. Además se puede ver el efecto de desfasaje de 180 grados causado por el amplificador Emisor Común. Con estas comprobaciones hechas se pasó a la etapa de simulación para corroborar el funcionamiento adecuado del amplificador.
+
+Si bien hay cálculos que no son apropiados hacer en la etapa de diseño, sino en la de simulación, como los límites de linealidad, ya que se requiere justamente de la simulación de los efectos parásitos de los componentes, si se pueden hacer los cálculos de potencia de los componentes y verificar que aquellos selecionados operen dentro de su zona segura (verificaión de los Absolute Maximum Ratings).
+
+Los resultados de las potencias calculadas, siimulads y medidas se presentarán más adelante, a continuación se presentan los componentes seleccionados, su zona de trabajo en el diseño y sus rangos máximos, obtenidos de las correspondientes hojas de datos.
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|c|c|c|}
+    \hline
+    Componente & Potencia de Diseño [mW] & Potencia Máxima [mW] \\ \hline
+    R_{BD} & 0.051 & 250 \\ \hline
+    R_{ED} & 252.7 & 250 \\ \hline
+    R_{1E} & 0.799 & 250 \\ \hline
+    R_{2E} & 0.141 & 250 \\ \hline
+    R_{CE} & 7.497 & 250 \\ \hline
+    R_{EE} & 1.350 & 250 \\ \hline
+    R_{1S} & 3.132 & 250 \\ \hline
+    R_{2S} & 3.698 & 250 \\ \hline
+    R_{ES} & 6483  & 10000 \\ \hline
+    R_{CB} & 6.354 & 250 \\ \hline
+    R_O    & 39.02 & 250 \\ \hline
+    R_L    & 41.62 & 250 \\ \hline
+    Q1 BC546B & 5.7264 & 500 \\ \hline
+    Q2 BD139  & 627.2  & 8000 \\ \hline
+    Q3 BC546B & 3.8043 & 500 \\ \hline
+    Q4 TIP122 & 19.736 & 2000 \\ \hline
+    Q5 TIP127 & 3178.8 & 65000 \\ \hline
+  \end{tabular}
+\end{table}
+
+En algunos casos, si bien el componente es capaz de soportar la potencia disipada, es necesario colocar un disipador (esto está esecificado también en la hoja de datos de los componentes utilizados).
+
+En particular, si bien Q4 y Q5 pertenecen a la misma familia de transistores y tienen el mismo encapsulado, Q5 requiere de disipador y Q4 no. Esto debido a que, como se ve en la tabla, la potencia de disipasión máxima de Q4 son 2 W, esto es sin disipador. Como Q5 supera ese valor en su potencia de diseño, es necesario utilizar un disipador en este componente.
+
+Ya que esta cota no es sueprada excecivamente, se optó por utilizar el disipador estandar del encapsulado TO220 (el que corresponde a estos transistores).
+
+Para corroborar que los transistores estuvieran siendo utilizados dentro de los rangos establecidos por sus Absolute Maximum Ratings se utilizaron las hojas de datos de estos componentes (\cite{tip122}, \cite{bd139}, \cite{bc546}).
+
+\subsubsection{Diseño de PCB}
+
+  Tomando el diseño visto en \cref{fig:AmpTot}, se utilizó el programa KiCAD para el diseño de la placa montada. Adicionalmente al diseño se le implementaron:
+\begin{enumerate}
+  \item Jumpers de aislación de etapas
+  \item Test Points para la mediciones de  y corriente
+  \item 2 headers macho a 90 grados para conectores BNC de entrada y salida
+  \item Bornera doble de alimentación
+  \item Capacitor de $1000_{\mu \text{F}}$ previo a $R_L$
+  \item 2 Headers macho a GND para fichas cocodrilo
+\end{enumerate}
+
+Se tuvieron en cuenta las mediciones de la consigna para posicionar los puntos de prueba en el circuito, se optó por omitir aquellos Test Points en lugares donde los componentes de montaje brinden el espacio para su prueba con el fin de obtener un diseño más compacto y de menor costo.
+
+\vspace{0.5em}
+{\small\textbf{Diseño de Esquemático}}
+
+Una vez constituido el esquemático (\cref{Esquematico}) a utilizar se le asignaron las huellas de los componentes, estas fueron designadas según la disipación de potencia estimada.
+
+\begin{figure}[H]
+  \centering
+  \resizebox{\textwidth}{!}{
+    \includegraphics{Imagenes/Esquemático.jpeg}
+  }
+  \caption{Esquemático del diseño final}
+  \label{Esquematico}
+\end{figure}
+
+\vspace{0.5em}
+{\small\textbf{Diseño de PCB }}
+
+Para el enrutamiento (\cref{Trazas}) de los componentes y su disposición se tuvieron en cuenta diversos factores:
+
+\begin{enumerate}
+  \item El ancho de vía de potencia: $1.5_{mm}$
+  \item Ancho de vía general: $1_{mm}$
+  \item Espaciado de los alrededores de Q2 y Q5 para disipador
+  \item Separación entre la $R_{ES}$ y los transistores 
+  \item Jumpers de fin de etapa en posición horizontal
+  \item Polaridad de los header a 90 grados según la bornera BN
+  \item Jumpers ubicados en el exterior de la placa
+  \item Plano de GND rodeando el circuito
+  \item Conexión de componentes mediante la capa B.Cu (Bottom Copper) 
+  \item Zonas de relleno con conexión a tierra, alivios térmicos y separación de contornos de $0.3_{mm}$
+  \item Dimensiones de placa $46.5_{cm^2}$
+  \item Puntos de medición de tensión en simetría
+  \item Uso de ángulos a 45 grados para evitar la discontinuidad en la impedancia característica de la pista, estrés y el efecto de “Trampa de ácido” por tensión superficial
+\end{enumerate}
+
+\begin{figure}[H]
+  \centering
+  \resizebox{350}{!}{
+      \includegraphics{Imagenes/Trazas.jpeg}
+  }
+  \caption{Vista del Bottom Copper del diseño}
+  \label{Trazas}
+\end{figure}
+
+Problemáticas presentes:
+\begin{enumerate}
+  \item Todas las huellas de los transistores, sin importar el encapsulado, mantienen la misma distribución de pines (Base=2, Colector=1 y Emisor=3), hecho que en la realidad difiere en los encapsulados TO-126 y TO-220, esto puede presentar problemas en el momento de su enrutamiento y funcionamiento en placa montada.
+  \item Las huellas de los capacitores tienen una orientación de polarización indistinta, lo que presenta problemas en su comportamiento esperado.
+  \item Las huellas de las entradas BNC tienen una orientación dada.
+\end{enumerate}
+
+\vspace{0.5em}
+{\small\textbf{Diseño de Impresión }}
+
+A continuación se presenta el diseño (\cref{Impreso}) utilizado para transferir las pistas a la placa de cobre
+
+\begin{figure}[H]
+  \centering
+  \resizebox{350}{!}{
+    \includegraphics{Imagenes/Impreso.jpeg}
+  }
+  \caption{Diseño de Impresión final}
+  \label{Impreso}
+\end{figure}
+
+\subsection{Simulación}
+
+\input{sections/seccion_simulacion_ltspice(1)}
+
+\subsection{Medición}
+
+\input{sections/Mediciones}
+
+\subsubsection{Depuración del circuito}
+
+La placa del circuito fue diseñada de manera que se pudieran aislar las etapas totalmente en continua y desacoplar las etapas en alterna de forma que se pudiera medir solo el efecto de la primera, la primera cargada con la segunda o todo el amplificador. Esto permitió una fácil depuración del circuito al presentarse fallos.
+
+Originalmente la $R_{cb}$ no estaba incluida en el diseño, lo cual generaba la saturación mencionada. Para definir la ubicación del problema, en principio desconocida, se realizó un procedimiento de medición sectorizado aprovechando las características mencionadas de la placa.
+
+Inicialmente se midieron las condiciones de polarización de cada etapa, dado que se podían aislar completamente, para verificar que la saturación no fuera producto de una polarización incorrecta de algún transistor. 
+
+Descartada esta posibilidad, se midió la salida de cada etapa de amplificación de manera secuencial. Como se mencionó antes, es posible asilar las etapas de amplificación, por lo tanto, se verificó primero el funcionamiento de la etapa Darlington, confirmado su funcionamiento correcto (esta no presentaba saturación y tenía una ganancia de tensión prácticamente unitaria) se acopló la segunda etapa.
+
+El amplificador Emisor Común tampoco presentó problemas, amplificando correctamente, teniendo gran ganancia de tensión y produciendo una inversión de fase. Al acoplar la etapa de salida se pudo ver que era el amplificador Sziklai el cual estaba generando problemas.
+Una vez identificado el problema se modificó el circuito añadiendo la $R_{cb}$, que limita la corriente entre colector del transistor npn y la base del pnp.
+
+\subsection{Resultados}
+
+A continuación se presentrán todos los resultados de los valores de diseño, simulación y medición obtenidos en distintas tablas, que irán acompañadas de un breve análisis considerando los objetivos fijados para este circuito.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{Componente} & \textbf{Parámetro} & \textbf{Diseño [V]} & \textbf{Simulación [V]} & \textbf{Medición [V]} & $\Delta \%$ \\ \hline
+
+% --- BLOQUE Q1 ---
+\multirow{4}{*}{Q1} & $V_b$ & 4.85 & 5.20 & 5.47 & -0.05 \\ \cline{2-6}
+                             & $V_c$ & 12.00 & 12.00 & 12.00 & 0.00 \\ \cline{2-6}
+                             & $V_e$ & 4.15 & 4.20 & 4.87 & -0.14 \\ \cline{2-6}
+                             & $I_C$ & 0.71 mA & 0.7 mA & 0.7 mA & 0 \\ \hline
+
+% --- BLOQUE Q2 ---
+\multirow{4}{*}{Q2} & $V_b$ & 4.15 & 4.20 & 4.87 & -0.14 \\ \cline{2-6}
+                             & $V_c$ & 12.00 & 12.00 & 12.00 & 0.00 \\ \cline{2-6}
+                             & $V_e$ & 3.45 & 8.60 & 8.05 & 0.07 \\ \cline{2-6}
+                             & $I_C$ & 72.6 mA & 71 mA & 182 mA & -0.61 \\ \hline
+
+% --- BLOQUE Q3 ---
+\multirow{4}{*}{Q3} & $V_b$ & 2.20 & 3.40 & 1.10 & 2.09 \\ \cline{2-6}
+                             & $V_c$ & 4.86 & 3.40 & 9.00 & -0.62 \\ \cline{2-6}
+                             & $V_e$ & 1.27 & 1.52 & 0.56 & 1.71 \\ \cline{2-6}
+                             & $I_C$ & 1.05 mA & 1 mA & 0.4 mA & 1.5 \\ \hline
+
+% --- BLOQUE Q4 ---
+\multirow{4}{*}{Q4} & $V_b$ & 8.16 & 7.73 & 7.93 & -0.03 \\ \cline{2-6}
+                             & $V_c$ & 11.30 & 11.16 & 10.48 & 0.06 \\ \cline{2-6}
+                             & $V_e$ & 8.05 & 7.06 & 8.17 & -0.14 \\ \cline{2-6}
+                             & $I_C$ & 7.97 mA & 5.5 mA & 3.16 mA & 0.74 \\ \hline
+
+% --- BLOQUE Q5 ---
+\multirow{4}{*}{Q5} & $V_b$ & 11.30 & 11.16 & 10.80 & 0.03 \\ \cline{2-6}
+                             & $V_c$ & 8.05 & 7.06 & 8.15 & -0.13 \\ \cline{2-6}
+                             & $V_e$ & 12.00 & 12.00 & 12.00 & 0.00 \\ \cline{2-6}
+                             & $I_C$ & 797 mA & 552 mA & 830 mA & -0.33 \\ \hline
+
+\end{tabular}
+\caption{Voltajes de polarización de transistores}
+\label{tab:polarizacion}
+\end{table}
+
+De la tabla \ref{tab:polarizacion} hay dos conlcusiones de particular importancia. Al ver que no hay gran diferencia entre los valores simulados y medidos en las condiciones de polarización de los transistores, se puede asegurar que estos están trabajando en los puntos de trabajo calculados, lo que hace que el circuto opere en los rangos esperados.
+
+Además, la disipación de potencia está dada principalmente por las corrientes en continua (ya que estas son mayores que las que provoca la señal alterna) por lo que también se confirma que los componentes están dentro de su zona segura de trabajo.
+
+\begin{table}[H]
+\centering
+\label{tab:potencia_componentes}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{Componente} & \textbf{Valor [$\Omega$]} & \textbf{Diseño [mW]} & \textbf{Simulación [mW]} & \textbf{Medición [mW]} & $\Delta \%$ \\ \hline
+R_{BD} & 1000000 & 5.10E-02 & 0.049 & 0.002 & 23.5000 \\ \hline
+R_{ED} & 47 & 252.7 & 236 & 1400 & -0.8314 \\ \hline
+R_{1E} & 120000 & 7.99E-01 & 0.887 & 0.984 & -0.0986 \\ \hline
+R_{2E} & 27000 & 1.36E-01 & 0.143 & 0.133 & 0.0752 \\ \hline
+R_{CE} & 6800 & 7.4970E+00 & 1.2 & 1.15 & 0.0435 \\ \hline
+R_{EE} & 1200 & 1.34E+00 & 10.8 & 0.34 & 30.7647 \\ \hline
+R_{1S} & 47000 & 3.13E-01 & 1.2 & 0.291 & 3.1237 \\ \hline
+R_{2S} & 100000 & 3.69E-01 & 0.656 & 0.64 & 0.0250 \\ \hline
+R_{ES} & 10 & 6482 & 5140 & 6720 & -0.2351 \\ \hline
+R_{CB} & 100 & 6.3536 & 10 & 0.001 & 9999.0000 \\ \hline
+R_O & 7.5 & 39.018 & 108 & 0 &  \\ \hline
+R_L & 8 & 39.018 & 0.04162 & 0 & \\ \hline
+Q1 & — & 5.72E+00 & 2.19 & 2.17 & 0.0092 \\ \hline
+Q2 & — & 627.2 & 610.73 & 695.24 & -0.1216 \\ \hline
+Q3 & — & 3.80E+00 & 2.4 & 3.4 & -0.2941 \\ \hline
+Q4 & — & 26.15 & 25.6 & 0.468 & 53.7009 \\ \hline
+Q5 & — & 3178 & 3460 & 3080 & 0.1234 \\ \hline
+\end{tabular}
+\caption{Potencias de cada componente}
+\end{table}
+
+El análisis de potencia de cada componente permite una doble comprobación de las condiciones seguras de trabajo de los transistores así como el correcto dimensionamiento de las resistencias utilizadas. Un valor de $\beta$ no previsto por el diseño o la simulación prodría haber provocado un aumento en la corriente de alguna de ellas lo que podría causar su fallo.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{Impedancia} & \textbf{Diseño [$\Omega$]} & \textbf{Simulación [$\Omega$]} & \textbf{Medición [$\Omega$]} & $\Delta \%$ \\ \hline
+Z_{in} & 327240 & 702000 & 591000 & 0.1878172589 \\ \hline
+Z_{out} & 8.0501 & 7.7 & 8.6 & -0.1046511628 \\ \hline
+Z_{1IN} & 327240 & 707000 & 491000 & 0.4399185336 \\ \hline
+Z_{2IN} & 2148.8 & 2328.00 & & \\ \hline
+Z_{23IN} & 2148.8 & 2324 & & \\ \hline
+Z_{3IN} & 21061 & 27900 & 27000 & 0.03333333333 \\ \hline
+Z_{1OUT} & 31.84 & 0.701 & 5.89 & -0.8809847199 \\ \hline
+Z_{2OUT} & 6800 & 5800 & & \\ \hline
+Z_{3OUT} & 5.6691 & 7.6 & & \\ \hline
+Z_{12IN} & 32724 & 323000 & 494000 & -0.3461538462 \\ \hline
+Z_{12OUT} & 6800 & 6800 & 10300 & -0.3398058252 \\ \hline
+\end{tabular}
+\caption{Impedancias}
+\label{tab:impedancias}
+\end{table}
+
+Las mediciones, tanto simuladas como reales, de las impedancias del circuito fueron las que precentaron mayores dificultades. El diseño total del amplificador involucró tres etapas: la simulación iterativa de Python, el cálculo de parámetros con Octave y la simulación.
+
+Los resultados obtenidos en Python fueron tomados una vez se corroboraron estos con Octave y luego simulados, sin embargo, en particular las impedancias de entrada y salida globales, precentaban diferencias singinficativas. 
+
+En Octave, el valor de impedancia es el visto en la tabla \ref{tab:impedancias}, que está por debajo del valor adecuado, sin embargo, al ser simulado, se obtuvo un valor que si cumple con los requisitos originales, por lo que se decidió seguir adelante.
+
+Lo mismo sucedió con la impedancia de salida, se obtuvo un valor por debajo de lo requerido pero al simular se vió que si se cumplía con los requerimientos. En este caso el valor visto en la tabla no se corresponde con el valor original.
+
+En vista de las mediciones resultó que, si bien no alcanzaba la misma magnitud, la simulación se correspondía más con el valor medido en la realidad. Esto no ocurrió con el valor de impedancia de salida. Al medir se obtenía un valor de 5.6 Ohms, un valor prácticamente idéntico al obtenido con Octave.
+
+Por esto se optó por modificar el circuito original y reemplazar la $R_O$ de 7.5 Ohms por una de 10, con la que se obtuvieron los valores presentados en la tabla \ref{tab:impedancias}.
+
+Además, debido a un fallo de diseño en la placa, resultaron imposibles de medir de manera adecuada las impedancias de entrada y salida de cada etapa aislada, a excepción de la entrada de la etapa 1 y la salida de la etapa 2.
+
+En estos últimos dos casos, al conectar el generador de señales, este estaba desacoplado en corriente continua mediante un capacitor. Los jumpers ubicados entre etapas para poder desacoplarlas en cambio, no tenían capacitores de desacoplo apropiados para poder inyectar en esos puntos la señal de manera adecuada.
+
+Lo que ocurría era que, al no desacoplar la fuente de alterna de la contínua, su impedancia quedaba en paralelo con la del circuito (entrada o salida según el caso) que se deseaba medir. Como su impedancia, que esá estandarizada, es de 50 Ohms, provocaba una reducción de la impedancia vista en condiciones de continua, moviendo el punto Q a un lugar inapropiado o incluso llevando el transistor al corte o saturación.
+
+Al cambiar de esta forma las conidiciones del circuito, la magnitud de impedancia medida (proceso que, al ser indirecto, conribuye aún más al error) no era la impedancia real del circuito medida en ese punto.
+
+Más allá de estos inconvenientes si se pudieron medir las impedancias de todo el circuito, que son las de mayor interés, y, luego de la modificaión mencionada, ambas resultaron dentro del rango adecuado.
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+    \hline
+    $f = 5\,\text{kHz}$ & \multicolumn{4}{c|}{$V_{\text{out(p-p)}}$ [mV]} & \multicolumn{4}{c|}{$A_V$} \\ \hline
+    $v_{\text{in(p-p)}}$ [mV] & Diseño & Simulación & Medición & $\Delta$ & Diseño & Simulación & Medición & $\Delta$ \\ \hline
+    2   & 263.1180  & 192.0  & 232.00  &-0.17 & 131.56 & 96.1   & 116& -0.17 \\ \hline
+    5   & 657.7951  & 466.0  & 456.00  &0.02& 131.56 & 93.2   & 91.2& 0.02 \\ \hline
+    10  & 1315.5902 & 879.0  & 900.00 &-0.02 & 131.56 & 87.940 & 90&  -0.02 \\ \hline
+    15  & 1973.3852 & 1234.0 & 1140.00 & 0.08& 131.56 & 82.33  & 76&  0.08\\ \hline
+    17  & 2236.5033 & 1353.0 & 1260.00 &0.07 & 131.56 & 79.59  & 74.12& 0.07\\ \hline
+    20  & 2631.1803 & 1468.0 & 1340.00 &0.10 & 131.56 & 73.45  & 67.00& 0.10\\ \hline
+    25  & 3288.9754 & 1586.0 & 1360.00 &0.17& 131.56 & 63.45  & 54.40&0.17 \\ \hline
+    50  & 6577.9508 & 1600.0 & 2000.00 &-0.20 & 131.56 & 32.1   & 40.00& -0.20\\ \hline
+    75  & 9866.9261 & 1411.0 & 2080.00 &-0.32& 131.56 & 18.8   & 27.7320.40 &-0.32 \\ \hline
+    100 & 13155.9015& 1243.0 & 2040.00 &-0.39 & 131.56 & 12.4   & 20.40 & -0.39\\ \hline
+  \end{tabular}
+  \caption{Tensión de Salida vs Entrada del Amplificador Completo}
+  \label{tensionGain}
+\end{table}
+
+Al analizar los valores obtenidos de tensión y ganancia en la tabla \ref{tensionGain} se puede ver que, si bien hubo ligeros corrimientos en los valores de polarización, el amplificador funciona de manera adecuada dentro de los rangos adecuados y calculados (algo que no resulta redundante recalcar es que la ganancia constante en el Diseño resulta de que se toma como componente lineal al transistor en esta etapa, cosa que no es cierta).
+
+La comparativa Simulación-Medición permite ver que hay ligeras diferencias entre lo esperado y lo encontrado, encontrando las mayores discrepancias entre estas etapas del desarrollo en los 75 y 100 mV, valores muy alejados del rango de operación óptimo del amplificador.
+
+Un valor de particular importancia es el de lso 17 mV, ya que es a partir de este punto que se considera que el amplificador ha perdido su linealidad, lo cual se analizará con mayor detenimiento cuando se vea al THD.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Frec [Hz]} & \textbf{Total} & \textbf{Etapa 1/2} & \textbf{Etapa 1} \\ \hline
+10.00 & 8.36 & 21.27 & 1.00 \\ \hline
+100.00 & 55.27 & 127.27 & 0.96 \\ \hline
+1000.00 & 159.00 & 283.63 & 0.96 \\ \hline
+10000.00 & 163.63 & 287.27 & 1.03 \\ \hline
+100000.00 & 161.81 & 240.00 & 0.96 \\ \hline
+1000000.00 & 18.90 & 40.72 & 0.94 \\ \hline
+3000000.00 & 5.81 & 12.90 & 0.92 \\ \hline
+\end{tabular}
+\caption{Barrido de frecuencia total ($V_{in} = 10\text{ mV}_{\text{p-p}}$)}
+\label{tab:barrido_frec_total}
+\end{table}
+
+Los resultados de la tabla \ref{tab:barrido_frec_total} son únicamente de medición. Como se explicó con anterioridad, carece de sentido hacer un barrido en frecuencia preciso en la etapa de diseño, si bien se precentó un gráfico de Bode del amplificador que puede ser acertado en baja frecuencia.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{f} & \textbf{Simulación [KHz]} & \textbf{Medición [KHz]} & $\Delta \%$ \\ \hline
+f_l & 1.05 & 0.382 & 1.748691099 \\ \hline
+f_h & 3800 & 210.2 & 17.07802093 \\ \hline
+BW  & 3800 & 209.8 & 17.11248808  \\ \hline
+\end{tabular}
+\caption{Frecuencias de Corte y Ancho de Banda}
+\label{tab:frecuencias}
+\end{table}
+
+Al analizar en conjunto las tablas \ref{tab:barrido_frec_total} y \ref{tab:frecuencias} se puede ver como los resultados de mecidión del barrido en frecuencia permitieron calcular el ancho de banda del amplificador.
+
+En particular en la tabla \ref{tab:frecuencias} se puede ver una gran discrepancia entre lo simulado y lo medido. Si bien el amplificador responde perfectamente (acorde a lo esperado) frente a variaciones de tensión de entrada, no lo hace frente a variaciones en la frecuencia de entrada.
+
+Este fenómeno es debido al efecto Miller. En un principio, al observar como a la salida del amplificador había montada una señal de alta frecuencia a la señal de entrada, se hizo una breve investigación para corregir el error y se colocó un capacitor entre base y colector de Q4, lo cual fue incorrecto.
+
+Al colocar este capacitor de esta manera (se puede ver con más detalle en \cref{Esquematico}) lo que se hace es aumentar la capacidad que existe entre estos terminales, lo que provoca una disminución de la impedancia para las bajas frecuencias. Esto, si bien hace que ya no esté presente el ruido de alta frecuencia (mayor capacidad implica menor impedancia, quedando estas señales con un camino directo a masa) disminuye el ancho de banda.
+
+Este efecto se hace evidente en la tabla \ref{tab:frecuencias} y es debido a que justamente, frecuencias mayores tendrán un camino a masa antes que hacia la salida, lo que para el amplificador singnifica una gran atenuación de estas en la salida. Además se ve que también disminuye la frecuencia de corte inferior, por el mismo fenómeno, para frecuencias menores, la impedancia del amplificador tomará una magnitud lo suficientemente grande como para impedirle el paso a la señal.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{$V_{in\text{ p-p}}$ [mV]}& \textbf{Simulación} $\%$& \textbf{Medición} $\%$& $\Delta \%$ \\ \hline
+5 & 0.04 & 6.31 & -0.99 \\ \hline
+10  & 0.08 & 10.00 & -0.99 \\ \hline
+20  & 0.14 & 13.00 & -0.99 \\ \hline
+50  & 0.30 & 69.90 & -1.00 \\ \hline
+100  & 0.53 & 82.00 & -0.99 \\ \hline
+\end{tabular}
+\caption{Distorsión armónica total (2 kHz)}
+\label{tab:thd_2khz}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{$V_{in\text{ p-p}}$ [mV]}  & \textbf{Simulación} $\%$& \textbf{Medición} $\%$& $\Delta \%$ \\ \hline
+5 & 0.00 & 0.02 & -1.00 \\ \hline
+10 & 0.00 & 1.78 & -1.00 \\ \hline
+20 & 0.00 & 6.45 & -1.00 \\ \hline
+50  & 0.02 & 3.55 & -0.99 \\ \hline
+100 & 0.02 & 9.00 & -1.00 \\ \hline
+\end{tabular}
+\caption{Distorsión armónica etapa 1 (2 kHz)}
+\label{tab:etapa1_thd_2khz}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{$V_{in\text{ p-p}}$ [mV]} & \textbf{Simulación} $\%$& \textbf{Medición} $\%$& $\Delta \%$ \\ \hline
+5 & 0.05 & 7.94 & -0.99 \\ \hline
+10 & 0.09 & 13.00 & -0.99 \\ \hline
+20 & 0.17 & 68.00 & -1.00 \\ \hline
+50 & 0.38 & 66.00 & -0.99 \\ \hline
+100 & 0.65 & 127.00 & -0.99 \\ \hline
+\end{tabular}
+\caption{Distorsión armónica etapas 1 y 2 (2 kHz)}
+\label{tab:etapas12_thd_2khz}
+\end{table}
+
+Al analisar el THD (tablas \ref{tab:thd_2khz}, \ref{tab:etapa1_thd_2khz} y \ref{tab:etapas12_thd_2khz}} es evidente que no fue suficiente el análsis con el simulador no fue suficiente como para estimar su magnitud real. Esto no significa que el funcionamiento del amplificador no sea el adecuado.
+
+Se puede ver que, si bien la magnitud real del THD es mucho mayor que la simulada, tiene un rango adecuado de tensión en el que no precenta un valor mayor al 10$\%$. Como se mencionó al analizar la ganancia en la tabla \ref{tensionGain}, tensión en la que se pierde linealidad es la de 17 mV, dejando un cierto rango de trabajo para el amplificador.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{f [Hz]} & \textbf{Total [nV/$\sqrt{\text{Hz}}$]} & \textbf{Etapa 1 [nV/$\sqrt{\text{Hz}}$]} & \textbf{Etapa 2 [nV/$\sqrt{\text{Hz}}$]} & \textbf{Etapa 3 [nV/$\sqrt{\text{Hz}}$]} \\ \hline
+10.00 & 59.83 & 3.87 & 60.10 & 59.84 \\ \hline
+100.00 & 97.02 & 0.84 & 97.80 & 97.36 \\ \hline
+600.00 & 157.35 (Pico Máximo) & 0.77 & 175.42 & 174.48 \\ \hline
+1k & 142.84 & 0.77 & 179.23 & 178.15 \\ \hline
+2k & 115.63 & 0.77 & 179.78 (Pico Máximo) & 178.53 (Pico Máximo) \\ \hline
+10k & 93.15 & 0.77 & 179.28 & 177.94 \\ \hline
+100k & 85.87 (Piso de Ruido) & 0.77 & 167.60 & 166.34 \\ \hline
+\end{tabular}
+\caption{Densidad Espectral de Potencia (PSD) de ruido por etapa en simulación}
+\label{tab:psd_ruido}
+\end{table}
+
+
+

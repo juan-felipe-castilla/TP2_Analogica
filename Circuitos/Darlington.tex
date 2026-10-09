@@ -1,0 +1,23 @@
+\documentclass[border=5mm]{standalone}
+\usepackage[siunitx, american]{circuitikz}
+
+\begin{document}
+\begin{circuitikz}[scale=1, transform shape, line width=0.6pt]
+
+% Fuente de entrada y NodoInput
+    \draw (0,0) node[ground]{} 
+          to[sV, l=$V_1$] (0,4)
+          to[short, -*] (1.5,4) node[above]{NodoInput}
+          to[short] (3,4);
+    \draw  (3,4) to[R, l=$Rbd$] (3,6) node[vcc]{$V_{CC}$};
+%Transistor Q1
+    \draw (4,4) node[npn] (Q1) {Q1}; 
+    \draw (3,4) to[short] (Q1.B);
+    \draw (Q1.C) to[short] (4,6) node[vcc]{$V_{CC}$};
+    \draw (5,3.2) node[npn] (Q2) {Q2};
+    \draw (Q1.E) to[short] (4,3.2) to[short] (Q2.B);
+    \draw (Q2.C) to[short] (5,6) node[vcc]{$V_{CC}$};
+    \draw (Q2.E) node[right]{Out} to[R, l=$Red$] (5,0) node[ground]{};   
+    
+\end{circuitikz}
+\end{document}

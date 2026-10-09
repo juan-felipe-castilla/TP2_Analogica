@@ -1,0 +1,448 @@
+\section{Marco Teórico}
+
+El amplificador desarrollado a continuación está constituido por tres etapas distintas desacopladas en alterna (entre la salida de una etapa y la entrada de la siguiente hay un capacitor de desacoplo que bloquea el paso a la corriente continua), de todas formas, es necesario antes hacer un análisis individual de cada etapa, ya que estarán formadas por configuraciones distintas de amplificadores.
+
+A continuación se detallarán distintos conceptos involucrados en el diseño, además del desarrollo de cada etapa individual utilizada, presentando los modelos de cada una, tanto global como en pequeña señal (necesario para el análisis en alterna).
+
+El proceso de análisis que se estableció fue el análisis de mallas para las ecuaciones de polarización de los transistores y para graficar sus rectas de carga y el análisis de nodos para encontrar las ecuaciones que describan los modelos de pequeña señal para obtener ganancias e impedancias.
+
+Esto ya que tener estas ecuaciones permite encontrar el modelo matricial que describa enteramente al circuito analizado, lo cual es sencillo de resolver por software y es más flexible a modificaciones. Por tanto, para cada circuito analizado a continuación se plantearán los sistemas de ecuaciones que se deseen analizar y se sacarán conclusiones, relaciones y funciones a partir de estos.
+
+Como se trabajará con el modelo completo, sin hacer simplificaciones de corriente, en las rectas de carga se verá la relación entre las corrientes de emisor y sus respectivas tensiones colector emisor, emisor colector en el caso del transistor pnp. Esto permite obtener valores más precisos de los resultados finales.
+
+\subsection{Concepto de Amplificación}
+
+Debido a sus propiedades constructivas, los transistores bipolares poseen un factor de amplificación de corriente tal que: 
+\begin{equation}
+    \beta = \frac{I_C}{I_B}
+    \label{beta}
+    \end{equation}
+Esto es, la corriente en el colector del transistor es beta veces más grande que la corriente en la base en corriente continua. Existe también su parámetro equivalente en corriente alterna, el hfe, sin embargo, a efectos prácticos, este no difiere significativamente del beta, por lo que en este informe, al igual que en los textos citados, se considerará el parámetro:
+\begin{equation}
+    h_{FE} = hfe = \beta
+    \label{hfe}
+    \end{equation}
+ Para hacer uso de este parámetro y lograr amplificar una corriente alterna con un transistor, es necesario polarizarlo para establecer sus condiciones de funcionamiento, lo cual a su vez define otros parámetros del circuito, como son su impedancia de entrada y salida, que se detallarán más adelante.
+ 
+ \subsection{Máxima Excursión  Simétrica}
+ 
+ El método de polarización que se busca lograr en el amplificador desarrollado es el de máxima excursión simétrica, ya que esto permite que la señal sea amplificada en un factor máximo en ambos semi ciclos sin generar distorsión por saturación o corte del transistor.
+Según el circuito, es decir, el tipo de amplificador diseñado, el punto Q (punto de trabajo) para obtener la máxima excursión simétrica se ubicará de manera distinta, justamente en función de los parámetros del circuito. Más adelante se detallará para cada tipo de amplificador utilizado en el diseño las ecuaciones necesarias para hallar este punto de trabajo.
+
+\subsection{Amplificación Básica con un BJT}
+
+Ya con el circuito polarizado en el punto deseado, para analizar la amplificación de la señal alterna aplicada a la entrada, es necesario realizar un análisis del circuito distinto. Para el caso de la polarización, por el principio de superposición, solo se tuvieron en cuenta las fuentes de tensión continua, anulando las de tensión alterna. Para el análisis de la ganancia ahora es necesario hacer lo opuesto, para encontrar la expresión adecuada.
+
+Otros parámetros importantes de calcular al analizar este circuito serán las impedancias de entrada y salida del amplificador, ya que al estar fabricando un amplificador multi etapa, es necesario conocer cómo carga la etapa siguiente a la anterior (ya que esto también modifica la ganancia total del amplificador) y, a escala global del circuito, conocer cuáles son las impedancias de entrada y salida de todo el amplificador.
+
+Al igual que en el caso del punto de trabajo, el análisis de la ganancia y las impedancias de cada etapa serán hechos al detallar el funcionamiento particular de cada configuración amplificadora utilizada en el diseño.
+
+\subsection{Saturación y Corte} %corroborar que primero pasa la saturación
+
+Algo importante de considerar es que, si bien se analizan los efectos de la corriente alterna y continua por separado, ambos efectos están presentes en el circuito, siendo la corriente total:
+\begin{equation}
+    I_C = I_c + i_c
+    \label{IC}
+    \end{equation}
+Es necesario conocer esto debido a que, en casos extremos, si la corriente alterna es muy elevada (la corriente continua no se modifica apreciablemente durante el funcionamiento del circuito) puede provocar que el transistor entre en zona de saturación, donde la corriente del colector ya no es controlada por la de base, o en la zona de corte, donde el voltaje colector emisor es igual al de la fuente de tensión continua y ya no hay circulación de corriente de colector.
+
+En cualquiera de los dos casos, si bien la saturación sucede primero debido a la característica exponencial de la corriente de colector, se produce una distorsión de la señal de salida, lo que hace que el amplificador ya no cumpla con:
+\begin{equation}
+    V_o = V_i \cdot Av
+    \label{amplificaion}
+    \end{equation}
+Es decir que pierde su linealidad. Por esto, a través de simulación, se deben determinar la máxima y mínima tensión de entrada antes de que se produzcan estos efectos. El corte y la saturación son dos efectos que hacen oportuna la máxima excursión simétrica, ya que permite la mayor amplificación sin distorsión en el circuito.
+
+\subsection{Amplificador con Múltiples Etapas}
+
+Es posible fabricar múltiples circuitos amplificadores con uno o más transistores BJT, y cada uno tendrá parámetros característicos según su configuración interna. En este caso se desea tener una combinación de estos efectos posibles (gran amplificación, baja impedancia de salida, alta impedancia de entrada), para lo cual se diseñarán múltiples amplificadores que se conectarán en cascada.
+
+La conexión de cada amplificador con el siguiente (la conexión entre etapas), se realizará mediante capacitores, lo cual permite considerar las etapas como desacopladas en continua (las etapas adyacentes no tienen efecto sobre la polarización de los transistores de cada etapa en particular) pero no en alterna, por lo que su efecto (analizado como impedancia de entrada de la etapa siguiente) deberá ser tomado en cuenta al analizar las rectas de carga en alterna de cada etapa, lo que se verá más adelante.
+
+A su vez, debido a que alas etapas posteriores cargan a las anteriores, al analizar el modelo en pequeña señal (el que permite estudiar el comportamiento en corriente alterna) las etapas quedan con sus salidas conectadas directamente a la entrada de la siguiente (en el caso de la etapa de salida, directamente a la carga) por lo que se forma un único gran modelo del amplificador final.
+
+\subsection{Máxima transferencia de energía}
+
+Para que una fuente de alimentación no ideal, es decir, que tiene una cierta impedancia de salida, pueda transmitir toda su energía disponible a la carga, esta debe tener un valor de impedancia que sea el complejo conjugado de la impedancia de salida de la fuente.
+
+El amplificador también se puede considerar como una fuente de alimentación, en este caso de corriente alterna, que tendrá una cierta impedancia de salida dada por la configuración del amplificador utilizado como etapa de salida. Como se sabe que se cargará al circuito con ocho Ohms (se está construyendo un amplificador de audio y esa es la impedancia típica de un parlante) se deberá diseñar el amplificador de manera que su impedancia de salida sea aproximadamente de 8 Ohms.
+
+\subsubsection{Adaptación de Impedancia}
+
+Para lograr esa impedancia en específico se utilizará una etapa adicional en el amplificador llamada “adaptadora de impedancia”. La etapa amplificadora del diseño será otra y su impedancia de salida no estará ajustada para máxima transferencia, por ello se añade esta etapa, calculada específicamente para que su impedancia de salida sea de ocho Ohms sin afectar la amplificación de la etapa anterior. Esto es lo que se conoce como adaptación de impedancia.
+
+\subsection{El Amplificador Darlington}
+
+Este amplificador tiene dos efectos importantes, tiene una alta impedancia de entrada, debido a la doble reflexión de su resistencia de emisor, además de una gran ganancia de corriente, ya que, como se ve en \cref{fig:Amplificador_Darlington} se conectan dos transistores en cascada.
+
+\begin{figure}[H]
+    \centering
+    \input{Circuitos/Darlington}
+    \caption{Amplificador Darlington}
+    \label{fig:Amplificador_Darlington}
+\end{figure}
+
+Al analizar este circuito se encuentran las siguientes ecuaciones:
+    \begin{equation}
+    I_{eq2} \cdot R_{ed} + V_{ceq2} = V_{cc}
+    \label{MSD}
+    \end{equation}
+    \begin{equation}
+    I_{eq1} \cdot \beta \cdot R_{ed} + V_{ceq1} = V_{cc}-0.7
+    \label{MID}
+    \end{equation}
+    \begin{equation}
+    I_{bq1} \cdot R_{bd} + I_{eq1} \cdot \beta \cdot R_{ed} = V_{cc}-1.4
+    \label{MED}
+    \end{equation}
+Además es necesario tener en cuenta las relaciones entre las corrientes en el circuito, tanto las de cada transistor como entre ambos transistores:
+    \begin{equation}
+    I_{bq1} \cdot \beta - I_{cq1} = 0
+    \label{Gain_Q1}
+    \end{equation}
+    
+    \begin{equation}
+    I_{eq1} - I_{cq1} - I_{bq1} = 0
+    \label{Corr_Q1}
+    \end{equation}
+    
+    \begin{equation}
+    I_{bq2} \cdot \beta - I_{cq2} = 0
+    \label{Gain_Q2}
+    \end{equation}
+    
+    \begin{equation}
+    I_{eq2} - I_{cq2} - I_{bq2} = 0
+    \label{Corr_Q2}
+    \end{equation}
+    
+    \begin{equation}
+    I_{eq1} - I_{bq2} = 0
+    \label{Rel_Q1Q2}
+    \end{equation}
+
+Con ellas se puede ver la conexión en cascada de los transistores \eqref{Rel_Q1Q2} con acoplo directo. Con estas ecuaciones se puede modelar el comportamiento del circuito perfectamente en continua, sin embargo, dado que se está diseñado un amplificador de múltiples etapas, es necesario considerar la impedancia de entrada de la etapa siguiente en el análisis de alterna.
+    
+Para trazar las rectas de carga de cada transistor se despeja de estas ecuaciones hasta lograr:
+    \begin{equation}
+        Q1: I_e = \frac{V_{cc}-0.7}{(\beta+1)\cdot R_{ed}} - \frac{V_{ce}}{(\beta+1) \cdot R_{ed}}
+        \label{Carga_Q1}
+    \end{equation}
+    
+    \begin{equation}
+        Q2: I_e = \frac{V_{cc}}{R_{ed}} - \frac{V_{ce}}{R_{ed}}
+        \label{Carga_Q2}
+    \end{equation}
+
+Se puede ver en \eqref{Carga_Q2} que la impedancia vista en el emisor de Q2 es reflejada hacia el emisor de Q1 por un factor de $\beta$ + 1, esto ya que, para analizar únicamente Q1 es necesario retirar Q2, pero como Red sigue presente en las ecuaciones de Q1 se debe tener en cuenta. Para mantener los voltajes constantes, ya que por Red circula $\beta$ + 1 veces la corriente de emisor de Q1, si se multiplica por este valor a la Red, la caída de tensión en esta será la misma y se podrá retirar Q2 para analizar únicamente Q1.
+
+Esta etapa se diseñó para ser la entrada del amplificador, ya que, debido a la doble reflexión de la Red, tiene una impedancia de entrada muy alta, lo cual hace que toda la tensión suministrada por la fuente (o la mayor parte) caiga en el amplificador y no en la resistencia de la fuente, permitiendo obviarla en el análisis.
+
+Sin embargo, esto implica que habrá etapas posteriores. Para las rectas de carga es de interés la etapa siguiente, en este caso la configuración Emisor Común, detallada más adelante, de la cual es necesario tener en cuenta la impedancia de entrada, ya que estará en paralelo con la Red en el análisis de alterna realizado para obtener la recta de carga en alterna. Con esto se obtiene: 
+\begin{equation}
+    Q1: i_e = I_{eq} - \frac{V_{ce}-V_{ceq}}{(R_{ed}\parallel Z_{iEC}) \cdot (\beta + 1)}
+    \label{Carga_aQ1}
+\end{equation}
+\begin{equation}
+    Q2: i_e = I_{eq} - \frac{V_{ce}-V_{ceq}}{R_{ed} \parallel Z_{iEC}}
+    \label{Carga_aQ2}
+\end{equation}
+
+Con esto queda completo el análisis de la polarización de este amplificador, sin embargo es necesario ahora considerar su comportamiento en corriente alterna. Para ello se utilizará el modelo en pequeña señal del transistor bipolar (\cite[p.~274]{Schilling3ed}), consiguiendo el circuito visto en \cref{fig:Dar_PS}
+
+\begin{figure}[H]
+    \centering
+    \input{Circuitos/DarlingtonPS}
+    \caption{Amplificador Darlington en pequeña señal}
+    \label{fig:Dar_PS}
+\end{figure}
+
+Dado que el nodo de B1 tiene una tensión fijada por la fuente de alimentación, solo es necesario analizar los nodos E1 y E2, de donde se obtiene:
+
+\begin{equation}
+    V_{E1} \cdot \frac{1-\beta}{h_{ie1}} + V_{E2} \cdot \frac{1}{h_{ie2}} = V_{in} \cdot \frac{1-\beta}{h_{ie1}}
+    \label{Nodo_V1_D}
+\end{equation}
+\begin{equation}
+    -V_{E1}\cdot \frac{1+\beta}{h_{ie2}} + V_{E2} \cdot (\frac{1+\beta}{h_{ie2}} + \frac{1}{R_{ed}}) = 0
+    \label{Nodo_V2_D}    
+\end{equation}
+
+Resolviendo este sistema y valuando $V_{in} = 1$ se obtiene en el elemento 2,2 de la matriz solución la ganancia de este amplificador. La expresión general de la ganancia de este amplificador será:
+
+\begin{equation}
+  A_V = \frac{R_{es}\cdot(1+\beta)}{R_{es}\cdot(1+\beta)+h_{ie2}+\frac{h_{hie1}}{R_{es}\cdot(1+\beta)}}
+  \label{AvDAr}
+\end{equation}
+
+Además, aplicando la misma reflexión que cuando se analizó la recta de carga, se obtiene que las impedancias serán:
+
+\begin{equation}
+    Z_{in} = R_{bd} \parallel (h_{ie1} + (\beta +1)\cdot(h_{ie2}+(\beta+1)\cdot R_{ed}))
+    \label{ZinD}
+\end{equation}
+\begin{equation}
+    Z_{out} = R_{ed} \parallel (\frac{h_{ie2}}{(\beta+1)} + \frac{R_{bd}+h_{ie1}}{(\beta+1)^2})
+    \label{ZoutD}
+\end{equation}
+
+Este amplificador, como se verá cuando se explique su diseño, tiene ganancia de tensión unitaria, algo que deben suplir las etapas siguientes, pero permite prescindir de la resistencia interna de la fuente real en los cálculos a la vez que suministra una gran corriente alterna al resto del amplificador.
+
+\subsection{El Amplificador Emisor Común}
+
+Esta etapa es la encargada de la amplificación de tensión en este diseño. Existen variantes de este amplificador en función de el acoplo de la resistencia de emisor en alterna (para desacoplarla se conecta un capacitor en paralelo con ella).
+
+En este caso se optó por una configuración con esta resistencia completamente desacoplada en alterna, ya que brinda una mayor amplificación y no interesa ajustar la impedancia de salida, ya que para ello se utiliará otra etapa. Por tanto, el circuito a analizar es el mostrado en \cref{fig:EmCom}.
+
+\begin{figure}{H}
+    \centering
+    \input{Circuitos/EmisorComun}
+    \caption{Amplificador Emisor Común}
+    \label{fig:EmCom}
+\end{figure}
+
+El nombre de Emisor Común viene del hecho de que, al analizarlo en alterna, el terminal del emisor queda directamente conectado a masa (cosa que no ocurre si hay degeneración de emisor, es decir, si no se desacopla). Nuevamente se realizará el analisis de mallas, de donde se obtiene:
+
+\begin{equation}
+    I_{bq} \cdot R_{bb} + I_{eq}\cdot R_{ee} = V_{bb}-0.7
+    \label{MEEC}
+\end{equation}
+\begin{equation}
+    I_{cq}\cdot R_{ce} + I_{eq} \cdot R_{ee} + V_{ceq} = V_{cc}
+    \label{MSEC}
+\end{equation}
+
+Las relaciones entre las corrientes serán:
+\begin{equation}
+    I_{bq}\cdot \beta - I_{cq} = 0
+    \label{AmpEC}
+\end{equation}
+\begin{equation}
+    I_{eq} \cdot \beta + I_{cq} - I_{eq} = 0 
+    \label{SumEC}
+\end{equation}
+
+Con esto se pueden armar las rectas de carga del transistor, teniendo en cuenta que en alterna, la impedancia de entrada de la etapa siguiente, en este caso la Sziklai, estará en paralelo con la $R_{ce}$ y deberá ser considerada.
+\begin{equation}
+    I_{e} = \frac{V_{cc}}{R_{ee} + \frac{\beta \cdot R_{ce}}{\beta + 1}} - \frac{V_{ce}}{R_{ee} + \frac{\beta \cdot R_{ce}}{\beta + 1}}
+    \label{Carga_EC}
+\end{equation}
+\begin{equation}
+    i_e = I_{eq} - \frac{v_{ce}-V_{ceq}}{R_{ce} \parallel Z_{inS}}
+    \label{Carga_aEc}
+\end{equation}
+
+La peculiaridad en esta configuración es que, así como se refleja desde el emisor a la base o de la base al emisor, también sucede desde el colector a la base, ya que las corrientes tampoco son iguales entre colector y emisor. Por esto es que $R_{ce}$ aparece multiplicado por un factor $\frac{\beta}{\beta+1}$ conocido también como $\alpha$.
+
+Al analizar el circuito en alterna se encuentra el modelo visto en \cref{fig:EMPS}
+
+\begin{figure}{H}
+    \centering
+    \input{Circuitos/EmisorComunPS}
+    \caption{Amplificador Emisor Común en pequeña señal}
+    \label{fig:EMPS}
+\end{figure}
+
+Haciendo el análisis nodal (nuevamente hay un nodo cuya tensión esta fija) se encuentran que el modelo se describe con la siguiente ecuación:
+\begin{equation}
+    \frac{V_{out}}{R_{ce}} = \frac{-\beta \cdot V_{in}}{h_{ie}}  
+    \label{AmpECPS}
+\end{equation}
+
+De esta ecuación se puede obtener la ganancia de manera sencilla ya que esta se expresa como $\frac{V_o}{V_i}$. Las impedancias de este circuito, siendo la $Z_{in}$ la que se considera en la recta de alaterna etapa anterior, serán:
+\begin{equation}
+    Z_{inEc} = R_{bb} \parallel h_{ie}
+    \label{ZinEC}
+\end{equation}
+\begin{equation}
+    Z_{outEC} = R_{ce}
+    \label{ZoEC}
+\end{equation}
+
+Como se verá en el diseño, la ganancia de este amplificador es grande, lo suficiente como para suplir los efectos de ganancias menores a uno en otras etapas y el de las pérdidas en el resto del circuito. Una particularidad en este caso es el signo negativo que aparece en \cref{AmpEC}, el cual hace que este amplificador también sea inversor, es decir, hay un desfasaje de 180 grados entre la entrada y la salida.
+
+\subsection{El Amplificador Sziklai}
+
+Este amplificador es el que conforma la etapa de salida del amplificador final, con el cual se busca adaptar la impedancia a aproximadamente ocho Ohms. De nuevo existen diversas configuraciones de este tipo de amplificador, pero en este caso se optó por tener un npn como entrada, un pnp como salida y una resistencia limitadora entre los transistores. Esta última es necesaria ya que evita un embalamiento de la corriente del transistor de salida, lo que provocaría su saturación.
+
+\begin{figure}{H}
+    \centering
+    \input{Circuitos/Sziklai}
+    \caption{Amplificador Sziklai}
+    \label{fig:Sz}
+\end{figure}
+
+Al igual que con los circuitos anteriores, se analizarán primero las ecuaciones de mallas para la polarización de los transistores:
+
+\begin{equation}
+    I_{eq1} \cdot R_{es} + I_{cq2}\cdot R_{es} + V_{ecq} = V_{cc}
+    \label{MSSz}
+\end{equation}
+\begin{equation}
+    I_{eq1}\cdot R_{es} + V_{ceq} + I_{bq1}\cdot R_{cb} + I_{cq2}\cdot R_{es} = V_{cc}-0.7
+    \label{MMSz}
+\end{equation}
+\begin{equation}
+    I_{bq1}\cdot R_{bbn} + I_{eq1}\cdot R_{es} + I_{cq2} \cdot R_{es} = V_{bbn} -0.7
+    \label{MESz}
+\end{equation}
+
+Y las relaciones entre las corrientes:
+
+\begin{equation}
+    I_{bq1}\cdot \beta_{n} - I_{cq1} = 0
+    \label{AmpNSz}
+\end{equation}
+\begin{equation}
+    I_{bq2}\cdot \beta_{p} - I_{cq2} = 0
+    \label{AmpPSz}
+\end{equation}
+\begin{equation}
+    I_{bq1} - I_{cq2} = 0
+    \label{RelCorNP}
+\end{equation}
+\begin{equation}
+    I_{eq1} - I_{cq1} - I_{bq1} = 0
+    \label{CorNPNSz}
+\end{equation}
+\begin{equation}
+    I_{eq2} - I_{cq2} - I_{bq2} = 0
+    \label{CorPNPSz}
+\end{equation}
+
+Con esto, se pueden encontrar las rectas de carga de ambos transistores. Una aclaración importante es que, en este caso se utilizan tipos de transistores distintos, un npn y un pnp, lo que trae consigo dos consecuencias importantes. La primera es que, a diferencia de en amplificador Darlington, no hay una caída de 1.4 volts (\cref{MID}), ya que las caídas de voltaje en los transistores se compensan en este amplificador.
+
+El otro punto importante es que, al ser transistores distintos es apropiado hacer una distinción en sus parámetros de ganancia $\beta$, como se ve en \cref{AmpNSz} y \cref{AmpPSz}. Esta diferencia puede llegar a ser relevante en algunos casos, sin embargo, como se verá más adelante, se podrá hacer una simplificación que no tendrá consecuencias severas en el diseño y se tomarán $\beta_n$ y $\beta_p$ como iguales. 
+
+El hecho de tenerlos en cuenta como variables distintas, al igual que hacer el análisis de mallas y nodos para poder armar los sistemas matriciales, presenta una ventaja en caso de que, a futuro, se desee hacer una modificación a los circuitos y esta distinción cobre relevancia.
+
+Las rectas de carga serán:
+
+\begin{equation}
+    I_{e1} = \frac{(\beta_n +1) \cdot (V_{cc}-0.7-V_{ce})}{R_{es}\cdot (\beta_n\cdot\beta_p + \beta_n+1) + \beta_n\cdot R_{cb}}
+    \label{Car_NSz}
+\end{equation}
+\begin{equation}
+    I_{e2} = \frac{\beta_n\cdot(\beta_p+1)\cdot(V_{cc}-V_{eq})}{R_{es}\cdot (\beta_n\cdot\beta_p + \beta_n+1)}
+    \label{Car_PSz}
+\end{equation}
+
+Debido a que los transistores están acoplados de manera que la corriente de colector del npn sea la que controle la corriente de emisor del pnp, teniendo al emisor del npn y al colector del pnp en un mismo nodo de salida, las ganancias de cada transistor no interactúan tan sencillamente como en el amplificador Darlington, teniendo esos coeficientes más complejos en las ecuaciones formados por los dos $\beta$ que participan en el circuito.
+
+Al hacer el análisis en alterna, esta vez no es necesario considerar el efecto de la impedancia de entrada de la etapa siquiente, ya que en este caso esta será la etapa de salida, sino que se tendrá en cuenta el efecto de la carga. En el caso de este amplificador, como la impedancia de salida es muy pequeña, se agrega una resistencia en serie $R_o$ para acercar el valor de $Z_{out}$ a los ocho Ohms deseados.
+
+Las rectas de carga en alterna serán: 
+
+\begin{equation}
+    i_{e1} = I_{eq1} - \frac{v_{ce}-V_{ceq}}{(R_{es}\parallel (R_o+R_L))\cdot \frac{\beta_n\cdot\beta_p + \beta_n+1}{\beta_n}}
+    \label{Car_aNSz}
+\end{equation}
+\begin{equation}
+    i_{e2} = I_{eq2} - \frac{v_{ec}-V_{ecq}}{(R_{es}\parallel (R_o+R_L))\cdot \frac{\beta_n\cdot\beta_p + \beta_n+1}{\beta_n\cdot(\beta_p+1)}}
+    \label{Car_aPSz}
+\end{equation}
+
+El modelo en pequeña señal del Sziklai precenta dos particularidades. Por un lado, se ve que si bien los emisores de los transistores están en direcciones opuestas, al ser un transistor npn y un pnp, las fuentes de corriente de sus modelos en pequeña señal tienen el mismo sentido de circulación (ambas entran en el mismo nodo). Además, las resistencias $R_{CB}$ y $h_{ie2}$, al estar en serie con la fuente de corriente $\beta\cdot i_{b1}$ no afectarán en el cálculo de ganancia o de impedancia en este amplificador, por más que $R_{CB}$ si tuviera impacto en la polarización.
+
+\begin{figure}{H}
+    \centering
+    \input{Circuitos/SziklaiPS}
+    \caption{Apmlificador Sziklai en pequeña señal}
+    \label{fig:SzPS}
+\end{figure}
+
+Analizar las impedancias de entrada y salida en el amplificador Sziklai es singinificativamente más complejo debido justamente a la forma que adopta este y las conecexiones entre los transistores. Si bien no es sencillo de observar a simple vista con el modelo de pequeña señal, se presentan a continuación los resultados de estas impedancias:
+
+\begin{equation}
+  Z_{in} = R_{BBn} \parallel {h_{hie4} + [Res\parallel(R_O+R_L)]*(1+\beta_n+\beta_n*\beta_p)}
+  \label{ZinSz}
+\end{equation}
+
+\begin{equation}
+  Z_{out} = \frac{\frac{R_O}{R_{ES}} + R_O\cdot \frac{1+\beta_n+\beta_n\cdot\beta_p}{h_{ie1}+R_{BBn}}}{\frac{1}{R_O}+\frac{1}{R_{ES}} + \frac{1+\beta_n+\beta_n\cdot\beta_p}{h_{ie1}+R_{BBn}}}
+  \label{ZoSz}
+\end{equation}
+
+A la hora de analizar la ganancia es necesario hacer una consideración. Este ampificador se está usando como etapa de salida y, sin la rama de la carga (es decir, el amplificador solo), se tiene una impedancia de salida muy chica, por lo que se conecta en serie con la carga una resistencia $R_O$ para aumentarla. Esto, si bien hace que se logre adaptar la impedancia perfectamente, tiene el efecto de "consumir" la ganancia.
+
+Al estar en serie con la carga y tener una magnitud similar, la mitad de la tensión caerá en la carga y el resto en la $R_O$, por lo  que la expresión final de la ganancia en este caso dependerá de si se quiere analizar únicamente el amplificador Sziklai, que tiene una ganacia unitaria, o el efecto final sobre la carga. En este caso es de particular interés este último y se presentará el resultado del análisis a continuación:
+
+\begin{equation}
+  A_V = \frac{1}{1+\frac{1}{R_L}\cdot(R_O+\frac{h_{ie1}}{1+\beta_n+\beta_n\cdot\beta_p})}
+  \label{AvSz}
+\end{equation}
+
+Es notable que no están presentes $R_{CB}$ y $h_{hie2}$ ni en las ecuaciones de impedancia ni en la expresión de la ganancia. Esto se debe a que, según el modelo en pequeña señal de este amplificador, están en serie con una fuente de corriente. Como se realiza el análisis nodal de los circuitos y la corriente en esa rama es fijada por la fuente, estas resistencias no influyen en los resultados.
+
+\subsection{Amplificador final}
+
+Ya habiendo analizado cada etapa que se implementará en el este amplificador, se puede ver el circuito del amplificador completo en  \cref{fig:AmpTot}
+
+\begin{figure}
+	 \centering
+	 \resizebox{\textwidth}{!}{
+		\input{Circuitos/Amplificador}
+	}
+    \caption{Amplificador de tres etapas}
+    \label{fig:AmpTot}
+\end{figure}
+
+Combinando ahora los modelos en pequeña señal, tomando los capacitores y la fuente de continua como cortocircuitos se obtiene el modelo de pequeña señal visto en \cref{fig:AmpTotPS}
+
+\begin{figure}
+	 \centering
+	 \resizebox{\textwidth}{!}{
+		\input{Circuitos/AmplificadorPS}
+	}
+    \caption{Amplificador de tres etapas}
+    \label{fig:AmpTotPS}
+\end{figure}
+
+\subsection{Respuesta en frecuencia }
+
+La respuesta en frecuencia de un dispositivo permite ver cómo varía un parámetro de interés, como impedancia o ganancia, frente a cambios en la frecuencia de la señal de entrada. Usualmente al probar un circuito se hace un barrido en frecuencia, es decir, se mide un mismo parámetro de la misma forma variando la frecuencia de entrada en un rango establecido.
+
+En este caso es de interés conocer cómo varía la ganancia en función de la frecuencia, la banda de paso del amplificador, o el ancho de banda, el rango de frecuencias donde la ganancia se mantiene constante, y la distorsión armónica del amplificador. 
+
+Al circuito se lo alimentará con una señal senoidal idealmente pura, es decir, un solo armónico, pero debido a imperfecciones dentro del circuito, a esta señal se le pueden acoplar en la salida otros armónicos de menor peso que alteren su forma. La distorsión armónica total, o THD, permite analizar la magnitud total de la distorsión que generan estos armónicos indeseados a la señal de salida.
+
+Tanto la banda de paso como la THD son fenómenos que se dan producto de las imperfecciones de los componentes, las soldaduras y las pistas de la placa, que generan capacidades parásitas las cuales obstruyen el paso de la señal de entrada. 
+
+En este informe se detallarán tres etapas principales del desarrollo del amplificador, diseño, simulación y medición, de las cuales luego se presentarán sus resultados, sin embargo, es necesario tener en cuenta que en el diseño se idealizan los componentes, ya que de otra forma los circuitos serian considerablemente más dificultosos de analizar. Es por esto que, para el caso del diseño, la banda de paso será infinita (hay un valor claro donde la ganancia se estabiliza pero jamás se atenúa) y no habrá distorsión armónica. Por esto solo se tendrán en consideración los resultados de simulación y medición en cuanto a ancho de banda y THD.
+
+Esto no significa que no se pueda hacer el análisis en frecuencia del circuito de manera teórica. se plantea a continuación \cref{AmpconC} el modelo en pequeña señal ahora considerando los capacitores no como  infinitos (por eso se despreciaba su efecto anterirormente) sino como una impedncia que varía con la frecuencia.
+
+\begin{figure}
+  \centering
+  \resizebox{\textwidth}{!}{
+    \input{Circuitos/AmplificadorPSconC}
+  }
+  \caption{Amplificador total sin simplificación de capacitores}
+  \label{AmpconC}
+\end{figure}
+
+Al resolver este circuito encontrando las ecuaciones de nodos es posible resolverlo valuando $s$, la variable compleja que define la impedancia capacitiva: $\frac{1}{s\cdot C} $, en distintos valores de frecuencia ($s=2\pi \cdot f $) y graficarlos para obtener un barrido en frecuencia teórico.
+
+Ya que este circuito necesita de doce ecuaciones para ser descrito, se omitirán en este apratado y podrán ser encontradas, al igual que el resto de sistemas de ecuaciones utiliados en este informe, dentro de los scripts utilizados para su resolución (INCERTAR REFERENCIA AL REPO).
+
+\subsubsection{Distorsión Armónica Total}
+
+Es un indicador de la distorsión generada en la frecuencia fundamental, en este caso la señal de entrada, por los distintos armónicos presentes (señales cuya frecuencia es un múltiplo de la fundamental) debidos a ruido, interferencias o capacidades parásitas \cite{vectorenergy_thd}.
+
+Un alto valor de este coeficiente implica una baja eficiencia energética en el circuito. En este caso, al ser un amplificador de audio, se considera como cota máxima de THD el $10\%$ de distorsión, pasado este punto se lo considera al circuito fuera de su zona lineal.
+
+\subsubsection{Densidad Espectral de Potencia}
+
+En todos los circuitos existe un cierto nivel de ruido eléctrico que afecta a la salida, por perfecta que sea la entrada. La densidad espectral de potencia o PSD es una herramienta que permite ver el efecto de este ruido para distintas frecuencias de entrada en un sistema lineal e invariante en el tiempo, que es como se está modelando este circuito \cite{allaboutcircuits_psd}.
+
+Esto es de particular importancia ya que se desea tener una señal limpia a la salida, lo que implica, además de poca cantidad de armónicos, que estos sean de baja potencia para que tengan el menor impacto posible en la salida.
+
+\subsection{Efecto Miller}
+
+En todo amplificador de tres terminales existen capacidades parásitas entre estos. En el caso de los transistores se encontrará una entro colector y emisor, base y emisor y base y colector. Esta última, al contrario que las anteriores, puede verse amplificada en gran medida por la ganancia del propio amplificador \cite.
+
+Debido a que la impedancia es inversamente proporcional al prodcuto de la frecuencia con la capacitancia, si esta capacidad parásita se ve amplificada por el transistor, la impedancia de entrada para señales de alta frecuencia se reduce significativemente.
+
+Esto puede probocar que, en caso de que esta capacidad no esté conectada directamente a masa (lo que implica que alguno de los dos terminales, base o colector, tenga un camino directo a masa), se vean a la salida señales indeseadas de alta frecuencia.
+
+
