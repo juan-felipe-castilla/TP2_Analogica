@@ -186,6 +186,7 @@ plot(x2, ic1, 'r', 'LineWidth', 1);
 hold on;
 %Punto Q
 plot(R1(4), R1(3), 'ro', 'markersize', 8, 'markerfacecolor', 'r');
+legend('Recta en Continua', 'Recta en Alterna', 'Punto Q');
 title('Recta de Carga CC - CA - Q1 (Darlington)');
 xlabel('Vce1 [V]'); ylabel('Ic1 [A]');
 grid on;
@@ -205,6 +206,7 @@ plot(x4, ic2, 'b', 'LineWidth', 1);
 hold on;
 %Punto Q
 plot(R1(8), R1(7), 'bo', 'markersize', 8, 'markerfacecolor', 'b');
+legend('Recta en Continua', 'Recta en Alterna', 'Punto Q');
 title('Recta de Carga CC - CA - Q2 (Darlington)');
 xlabel('Vce2 [V]'); ylabel('Ic2 [A]');
 grid on;
@@ -225,6 +227,7 @@ plot(x6, ic3, 'g', 'LineWidth', 1);
 hold on;
 %Punto Q
 plot(R2(4), R2(3), 'go', 'markersize', 8, 'markerfacecolor', 'g');
+legend('Recta en Continua', 'Recta en Alterna', 'Punto Q');
 title('Recta de Carga CC - CA - Q3 (Emisor Común)');
 xlabel('Vce3 [V]'); ylabel('Ic3 [A]');
 grid on;
@@ -243,6 +246,7 @@ plot(x7, ic4, 'y', 'LineWidth', 1);
 hold on;
 %Punto Q
 plot(R3(4), R3(3), 'yo', 'markersize', 8, 'markerfacecolor', 'y');
+legend('Recta en Continua', 'Recta en Alterna', 'Punto Q');
 title('Recta de Carga CC - CA - Q4 (Sziklai)');
 xlabel('Vce4 [V]'); ylabel('Ic4 [A]');
 grid on;
@@ -261,6 +265,7 @@ plot(x8, ic5, 'm', 'LineWidth', 1);
 hold on;
 %Punto Q
 plot(R3(8), R3(7), 'mo', 'markersize', 8, 'markerfacecolor', 'm');
+legend('Recta en Continua', 'Recta en Alterna', 'Punto Q');
 title('Recta de Carga CC - CA - Q5 (Sziklai)');
 xlabel('Vce3 [V]'); ylabel('Ic3 [A]');
 grid on;
@@ -362,7 +367,8 @@ IR1s = Vcc/(R1s+R2s);
 PR1s = IR1s^2*R1s
 IR2s = IR1s-R3(1);
 PR2s = IR2s^2*R2s
-PRes = (R3(3)+R3(6))^2*Res6
+PRes = (R3(3)+R3(6))^2*Res
+PRcb = (R3(5))^2*Rcb
 vi = 10e-3; %10 mV
 Av = 111.798542;
 vo = vi*Av;
