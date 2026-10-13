@@ -11,7 +11,7 @@ R1s = 47000;
 R2s = 100000;
 Res = 10;
 Rcb = 100;
-Ro  = 7.5;
+Ro  = 10;
 Rl  = 8;
 hie1 = 3478.1;
 hie2 = 34.436;
@@ -41,7 +41,7 @@ Av1 = v_N005 / vi1
 disp('');
 disp(' Impedancia' );
 ZinD = 1/(1/Rbd + 1/((hie1+(Bn+1)*(hie2+(Bn+1)*Red))))
-ZoutD = 1/(1/Red + 1/(hie2/(Bn+1) + (Rbd+hie1)/(Bn+1)^2))
+ZoutD = 1/(1/Red + 1/(hie2/(Bn+1) + (Rbd+hie1)/((Bn+1)^2)))
 
 % Amplificador Emisor Común
 
