@@ -1,0 +1,24 @@
+\documentclass[border=5mm]{standalone}
+\usepackage[siunitx, american]{circuitikz}
+
+\begin{document}
+\begin{circuitikz}[scale=0.7, transform shape, line width=0.6pt]
+
+% Fuente de entrada y NodoInput
+    \draw (0,0) node[ground]{} 
+          to[sV, l=$V_1$] (0,4)
+          to[short, -*] (1.5,4) node[above]{NodoInput}
+          to[short] (3,4);
+    \draw (3,4) to[R, l=$R1E$] (3,8) node[vcc]{$V_{CC}$};
+    \draw (3,4) to[R, l=$R2E$] (3,0) node[ground]{};
+    \draw (5,4) node[npn] (Q1) {Q1}; 
+    \draw (3,4) to[short] (Q1.B);
+    \draw (7,7) node[pnp] (Q2) {Q2};
+    \draw (Q1.C) to[R, l=$R_{cb}$] (5,7) to[short] (Q2.B);
+    \draw (Q2.E) to[short] (7,8) node[vcc]{$V_{CC}$};
+    \draw (Q1.E) to[short] (7,3.2) to[short] (Q2.C);
+    \draw (Q2.C) to[short] (7,3.2) node[above left]{Out} to[R, l=$Res$] (7,0) node[ground]{};
+    \draw (7,3.2) to[R, l=$R_o$] (9,3.2) to[C, l=$10\mu$] (11,3.2) to[R, l=$R_L$] (11,0) node[ground]{};
+    
+\end{circuitikz}
+\end{document}
