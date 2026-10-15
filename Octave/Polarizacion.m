@@ -173,7 +173,7 @@ ZiSz = 2.1131e+04; % Impedancia de entrada del amplificador Sziklai
 % Rectas de carga
 
 %Gráfico Transistor Q1
-x1 = linspace(0, 11.3, 100);
+x1 = linspace(0, Vcc-0.7, 100);
 Ic1 = (Vcc-0.7)/((Bn+1)*Red) - x1/((Bn+1)*Red);
 Rca1 = (Bn+1)/(1/Red + 1/ZiEC);
 x2 = linspace(0, R1(3)*Rca1+R1(4), 100);
@@ -193,7 +193,7 @@ grid on;
 hold off;
 
 %Gráfico Transistor Q2
-x3 = linspace(0, 12, 100);
+x3 = linspace(0, Vcc, 100);
 Ic2 = Vcc/Red - x3/Red;
 Rca2 = 1/((1/Red+1/ZiEC));
 x4 = linspace(0, R1(7)*Rca2+R1(8), 100);
@@ -213,7 +213,7 @@ grid on;
 hold off;
 
 %Gráfico Transistor Q3
-x5 = linspace(0, 12, 100);
+x5 = linspace(0, Vcc, 100);
 Rcc3 = Ree + (Bn*Rce)/(Bn+1);
 Ic3 = Vcc/Rcc3 - x5/Rcc3;
 Rca3 = 1/(1/Rce+1/ZiSz);
