@@ -1,15 +1,22 @@
 LTspice 26.0.2 for Windows
 Circuit: C:\Users\54346\Documents\GitHub\TP2_Analogica\Simu\AmpFinalEstadiscamentecorrecto.net
-Start Time: Wed Oct  7 14:49:21 2026
+Start Time: Fri Oct  9 21:39:33 2026
 solver = Normal
 Maximum thread count: 8
 tnom = 27
 temp = 27
 method = trap
 Direct Newton iteration succeeded in finding operating point.
-Total elapsed time: 0.224 seconds.
+Total elapsed time: 0.108 seconds.
 
 Files loaded:
 C:\Users\54346\Documents\GitHub\TP2_Analogica\Simu\AmpFinalEstadiscamentecorrecto.net
 C:\Users\54346\AppData\Local\LTspice\lib\cmp\standard.bjt
 
+vonoise_10hz: V(onoise) =7.55778462036e-09 at 10
+vonoise_600hz: V(onoise) =7.50725720399e-09 at 600
+vonoise_1khz: V(onoise) =7.50724815646e-09 at 1000
+vonoise_2khz: V(onoise) =7.50724460374e-09 at 2000
+vonoise_10khz: V(onoise) =7.50724282739e-09 at 10000
+vonoise_100khz: V(onoise) =7.50724282739e-09 at 100000
+vonoise_100hz: V(onoise) =7.50775708269e-09 at 100
